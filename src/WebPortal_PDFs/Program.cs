@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace WebPortal_PDFs
 {
-    public class Program
+    public partial class Program
     {
         public static async Task Main(string[] args)
         {
@@ -24,11 +25,12 @@ namespace WebPortal_PDFs
             builder.Services.AddHttpClient("", client =>
             {
                 client.BaseAddress = new Uri("");
-            });
+            }).AddHttpMessageHandler<AuthorizationMessageHandler>();
             */
+     
 
             builder.Services.AddMudServices();
-
+            builder.Services.AddBlazoredLocalStorage();
             await builder.Build().RunAsync();
         }
     }
