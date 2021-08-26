@@ -18,40 +18,11 @@
     </EditForm>
 </div>
 @code {
+
     LoginForm model = new();
     bool success;
 
-    public class RegisterAccountForm
-    {
-        [Required]
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
-        public string Username { get; set; }
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-        public string Password { get; set; }
-
-        [Required]
-        [Compare(nameof(Password))]
-        public string Password2 { get; set; }
-
-    }
-
-    public class LoginForm
-    {
-        [Required]
-        [StringLength(20, ErrorMessage = "Name length can't be then 20")]
-        public string Username { get; set; }
-
-        [Required]
-        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-        public string Password { get; set; }
-
-    }
 
     private void OnValidSubmit(EditContext context)
     {
