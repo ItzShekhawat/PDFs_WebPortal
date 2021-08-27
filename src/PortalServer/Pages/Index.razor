@@ -43,9 +43,9 @@
         
         ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(model.Username);
 
-        sessionStorage.SetItemAsStringAsync("Username", model.Username);
+        await sessionStorage.SetItemAsStringAsync("Username", model.Username);
 
-        NavigationManager.ToAbsoluteUri($"http://localhost:5001/api/Access/{model.Username}{model.Password}");
+        NavigationManager.ToAbsoluteUri($"https://localhost:44315/api/Access/{model.Username}{model.Password}");
 
         return await Task.FromResult(true);
     }
