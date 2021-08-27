@@ -24,6 +24,7 @@ namespace WebPortal_PDFs
 
             // Registring the Headler
             builder.Services.AddTransient<AuthorizationMessageHandler>();
+
             /*
             builder.Services.AddHttpClient("", client =>
             {

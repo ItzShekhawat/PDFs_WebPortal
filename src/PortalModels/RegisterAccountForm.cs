@@ -6,16 +6,22 @@ using System.Threading.Tasks;
 
 namespace WebPortal_PDFs.Models
 {
-    public class LoginForm
+    public class PortalModels
     {
         [Required]
-        [StringLength(20, ErrorMessage = "Name length can't be then 20")]
+        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
         public string Username { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
 
         [Required]
         [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
         public string Password { get; set; }
 
-        public bool RemenberMe { get; set; }
+        [Required]
+        [Compare(nameof(Password), ErrorMessage ="Password do not match!")]
+        public string Password2 { get; set; }
     }
 }

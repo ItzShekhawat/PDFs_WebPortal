@@ -1,0 +1,43 @@
+﻿@page "/"
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+<AuthorizeView>
+    <Authorized>
+        <p>Welcome : @context.User.Identity.Name </p>
+    </Authorized>
+    <NotAuthorized>
+        <div style="max-width: vw; min-height: vh;  text-align:center">
+            <EditForm Model="@model" OnValidSubmit="OnValidSubmit" style="display:inline-block">
+                <DataAnnotationsValidator />
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField Label="Username" HelperText="Max. 8 characters"
+                                      @bind-Value="model.Username" For="@(() => model.Username)" />
+                        <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                      @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    LoginForm model = new();
+    bool success;
+
+
+
+    private void OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+    }
+
+}

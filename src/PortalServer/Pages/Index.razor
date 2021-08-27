@@ -1,0 +1,54 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
+<AuthorizeView>
+    <Authorized >
+        <p> You are going to the tables page  </p>
+        @context.User.Identity.Name 
+    </Authorized >
+    <NotAuthorized Context="Login">
+        <div style="max-width: 100vw; min-height: 100vh;  text-align:center">
+            <EditForm Model="@model" OnValidSubmit="ValidateUser" style="display:inline-block">
+                <DataAnnotationsValidator />
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField Label="Username" HelperText="Max. 8 characters"
+                                      @bind-Value="model.Username" For="@(() => model.Username)" />
+                        <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                      @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+@code {
+
+    LoginForm model = new();
+    bool success;
+
+
+
+    private async Task<bool> ValidateUser()
+    {
+        
+        ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(model.Username);
+
+        sessionStorage.SetItemAsStringAsync("Username", model.Username);
+
+        NavigationManager.ToAbsoluteUri($"http://localhost:5001/api/Access/{model.Username}{model.Password}");
+
+        return await Task.FromResult(true);
+    }
+
+}
+

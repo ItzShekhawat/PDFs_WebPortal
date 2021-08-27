@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebPortal_PDFs", "WebPortal_PDFs.csproj", "{DFD7D083-7216-4596-BC1A-66BFB3F88048}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebPortal_PDFs_ServerSide", "..\WebPortal_PDFs_ServerSide\WebPortal_PDFs_ServerSide.csproj", "{539B1D1D-23E3-4384-B923-B34FA2061814}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelsLibrary", "..\ModelsLibrary\ModelsLibrary.csproj", "{C2EFE3CF-FB09-4F89-A81D-3F3DEFCADDB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DFD7D083-7216-4596-BC1A-66BFB3F88048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DFD7D083-7216-4596-BC1A-66BFB3F88048}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DFD7D083-7216-4596-BC1A-66BFB3F88048}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DFD7D083-7216-4596-BC1A-66BFB3F88048}.Release|Any CPU.Build.0 = Release|Any CPU
+		{539B1D1D-23E3-4384-B923-B34FA2061814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{539B1D1D-23E3-4384-B923-B34FA2061814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{539B1D1D-23E3-4384-B923-B34FA2061814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{539B1D1D-23E3-4384-B923-B34FA2061814}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2EFE3CF-FB09-4F89-A81D-3F3DEFCADDB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2EFE3CF-FB09-4F89-A81D-3F3DEFCADDB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2EFE3CF-FB09-4F89-A81D-3F3DEFCADDB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2EFE3CF-FB09-4F89-A81D-3F3DEFCADDB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

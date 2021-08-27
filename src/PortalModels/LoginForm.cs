@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebPortal_PDFs.Models
+namespace PortalModels
 {
     public class LoginForm
     {
@@ -15,7 +15,5 @@ namespace WebPortal_PDFs.Models
         [Required]
         [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
         public string Password { get; set; }
-
-        public bool RemenberMe { get; set; }
     }
 }
