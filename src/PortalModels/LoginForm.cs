@@ -9,7 +9,7 @@ namespace PortalModels
     public class LoginForm
     {
         [Required]
-        [StringLength(20, ErrorMessage = "Name length can't be then 20")]
+        [StringLength(20, ErrorMessage = "Name length can't be then 20", MinimumLength = 2)]
         public string Username { get; set; }
 
         [Required]

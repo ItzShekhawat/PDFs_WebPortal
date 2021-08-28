@@ -21,7 +21,6 @@ namespace PortalModels
 
         [Required]
         public bool Access_token { get; set; }
-        public DateTime Created_at { get; set; }
 
         [Required]
         [StringLength(40)]

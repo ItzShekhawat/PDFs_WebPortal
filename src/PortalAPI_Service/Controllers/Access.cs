@@ -6,6 +6,8 @@ using PortalAPI_Service.Repositories.AccessRepos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 
 namespace PortalAPI_Service.Controllers
 {
@@ -20,14 +22,37 @@ namespace PortalAPI_Service.Controllers
         }
 
         [HttpGet]
-        [Route("{username}/{password}")]
-
-        public IActionResult CheckUser(string username, string password)
+        [Route("all")]
+        public IActionResult GetUsers()
         {
-            var result = _loginRepo.CheckUser(username, password);
-          
-            return result == null ? NotFound(username) : (IActionResult)Ok(result);
+            var result = _loginRepo.AllUsers();
+            return result == null ? NotFound() : Ok(result);
         }
+
+
+        [HttpPost]
+        //[Route("{username}/{password}")]
+        public async Task<IActionResult> CheckUser([FromBody] LoginForm user)
+        {
+            Console.WriteLine("Inizio");
+            try
+            {
+                if (!ModelState.IsValid) { return BadRequest(); }
+
+                var result = await _loginRepo.CheckUser(user.Username, user.Password);
+                Console.WriteLine("Passed");
+                return result == null ? NotFound() : (IActionResult)Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Checking user credentials : " + ex);
+                return null;
+            }
+
+        }
+
+
 
 
 

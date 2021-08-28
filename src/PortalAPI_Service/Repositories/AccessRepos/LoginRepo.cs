@@ -20,14 +20,14 @@ namespace PortalAPI_Service.Repositories.AccessRepos
 
         public async Task<UsersModel> CheckUser(string username, string password)
         {
-            string sql = $"SELECT Id, Full_name, Password, Access_token,  Department FROM users WHERE Full_name = '{username}' AND Password = '{password}' ";
+            string sql = $"SELECT * FROM users WHERE Full_name = '{username}' AND Password = '{password}' ";
             Console.WriteLine(sql);
             return _db.Query<UsersModel>(sql).FirstOrDefault();
         }
 
         public List<UsersModel> AllUsers()
         {
-            string sql = $"SELECT Id, Full_name, Password, Access_token,  Department FROM users ;";
+            string sql = $"SELECT * FROM users ;";
             Console.WriteLine(sql);
             return _db.Query<UsersModel>(sql).ToList();
         }
