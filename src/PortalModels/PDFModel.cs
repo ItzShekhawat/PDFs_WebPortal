@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace PortalModels
 {
-    class PDFModel
+   public class PDFModel
     {
         [Key]
+        public int Id { get; set; }
+
+        [Required]
         [StringLength(25)]
         public string Folder_name { get; set; }
 

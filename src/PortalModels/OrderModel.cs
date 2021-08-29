@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PortalModels
 {
-    class OrderModel
+    public class OrderModel
     {
         [Key]
         [StringLength(25)]

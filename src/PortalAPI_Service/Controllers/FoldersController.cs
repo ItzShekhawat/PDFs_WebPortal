@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PortalAPI_Service.Repositories.FoldersRepos;
+using PortalModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,36 +13,59 @@ namespace PortalAPI_Service.Controllers
     [ApiController]
     public class FoldersController : ControllerBase
     {
-        // GET: api/<FoldersController>
-        [HttpGet]
-        public IEnumerable<string> GetClients()
+        private readonly IFoldersRepo _foldersRepo;
+
+        public FoldersController(IFoldersRepo foldersRepo)
         {
+            _foldersRepo = foldersRepo;
             
         }
 
-        // GET api/<FoldersController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+
+        [HttpGet]
+        public async Task<IActionResult> GetClientsAsync()
         {
-            return "value";
+            try
+            {
+                var result = await _foldersRepo.GetClientsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        // POST api/<FoldersController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet]
+        [Route("Orders/{Client_name}")]
+        public async Task<IActionResult> GetOrdersAsync(string Client_name)
         {
+            try
+            {
+                var result = await _foldersRepo.GetOrdersAsync(Client_name);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        // PUT api/<FoldersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet]
+        [Route("Suborder/{Order}")]
+        public async Task<IActionResult> GetSubordersAsync(string Order)
         {
+            try
+            {
+                var result = await _foldersRepo.GetSubordersAsync(Order);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        // DELETE api/<FoldersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+
     }
 }

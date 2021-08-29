@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PortalAPI_Service.Repositories.AccessRepos;
+using PortalAPI_Service.Repositories.FoldersRepos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,11 @@ namespace PortalAPI_Service
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PortalAPI_Service", Version = "v1" });
             });
-            // Linking the Class and the Interface of login Repo
+
+            // Linking the Class and the Interface
             services.AddScoped<ILoginRepo, LoginRepo>();
+            services.AddScoped<IFoldersRepo, FoldersRepo>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

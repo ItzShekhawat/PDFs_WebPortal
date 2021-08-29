@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PortalModels
 {
-    class PDF_FileModel
+    public class PDF_FileModel
     {
         [Key]
         [StringLength(25)]

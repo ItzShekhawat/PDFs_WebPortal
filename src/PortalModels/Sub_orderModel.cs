@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PortalModels
 {
-    class Sub_orderModel
+    public class Sub_orderModel
     {
         [Key]
         [StringLength(25)]
