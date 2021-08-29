@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalServer", "PortalServe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalModels", "..\PortalModels\PortalModels.csproj", "{DBFB5EC4-5F3F-4695-BDAC-21D83CA953FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortalAPI_Service", "..\PortalAPI_Service\PortalAPI_Service.csproj", "{2A6199D8-DEC8-4A13-8F6A-16DF245CCF3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortalAPI_Service", "..\PortalAPI_Service\PortalAPI_Service.csproj", "{2A6199D8-DEC8-4A13-8F6A-16DF245CCF3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

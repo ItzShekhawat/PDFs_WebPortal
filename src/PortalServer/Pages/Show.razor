@@ -1,0 +1,28 @@
+﻿@page "/view/{PageSelection}"
+<h2>@PageSelection</h2>
+
+<MudToolBar>
+    <MudTextField @bind-Value="search" 
+                  Placeholder="Ricerca" 
+                  Adornment="Adornment.Start"
+                  AdornmentIcon="Search"
+                  Class="mt-0"
+                  >
+    </MudTextField>
+</MudToolBar>
+
+
+
+
+
+
+
+@code {
+
+    // This Will let the page know what List to show because this is going to be a dynamic Page.
+    [Parameter]
+    public string PageSelection { get; set; }
+
+    private string search = "";
+
+}
