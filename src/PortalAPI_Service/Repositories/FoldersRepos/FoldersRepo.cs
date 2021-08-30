@@ -19,7 +19,7 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
         }
 
 
-        public async Task<IEnumerable<ClientModel>> GetClientsAsync()
+        public async Task<List<ClientModel>> GetClientsAsync()
         {
             var query = "SELECT * FROM Client";
             var result = await _db.QueryAsync<ClientModel>(query);

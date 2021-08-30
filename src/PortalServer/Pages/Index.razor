@@ -1,8 +1,8 @@
 ﻿@page "/"
-@inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-
+@inject HttpClient Http 
+@inject NavigationManager NavigationManager 
 <AuthorizeView>
     <Authorized >
         <p> You are going to the tables page  </p>
@@ -22,6 +22,9 @@
                     <MudCardActions>
                         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
                     </MudCardActions>
+                    <MudAlert Icon="Alert">
+                        <span>@LoginMessage</span>
+                    </MudAlert>
                 </MudCard>
             </EditForm>
         </div>
@@ -35,20 +38,60 @@
 
     LoginForm model = new();
     bool success;
+    public string LoginMessage { get; set; }
 
 
 
     private async Task<bool> ValidateUser()
     {
-        
-        ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(model.Username);
+        try
+        {
+            //Http.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Bearer", access_token);
+            //Http.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
 
-        await sessionStorage.SetItemAsStringAsync("Username", model.Username);
+            string json_User = JsonConvert.SerializeObject(model);
 
-        NavigationManager.ToAbsoluteUri($"https://localhost:44315/api/Access/{model.Username}{model.Password}");
+            HttpRequestMessage httpRequestMessage = new();
+            httpRequestMessage.Method = new HttpMethod("POST");
+            httpRequestMessage.RequestUri = new Uri(@"https://localhost:44315/api/Access/");
+            httpRequestMessage.Content = new StringContent(json_User);
+            httpRequestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
 
-        return await Task.FromResult(true);
-    }
+
+            var response = await Http.SendAsync(httpRequestMessage);
+
+            var responseStatusCode = response.StatusCode;
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            if(responseStatusCode.ToString() == "OK")
+            {
+                // DeserializeObj
+                JsonConvert.DeserializeObject<UsersModel>(responseBody);
+
+                await sessionStorage.SetItemAsStringAsync("Username", model.Username);
+                ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(model.Username);
+
+                NavigationManager.NavigateTo("/clients");
+            }
+            else
+            {
+                LoginMessage = "Invalid username or password"; 
+            }
+
+
+            return await Task.FromResult(true);
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+
+
+
+
+
+}
 
 }
 

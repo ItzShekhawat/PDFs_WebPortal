@@ -17,8 +17,6 @@ using System.Threading.Tasks;
 using PortalAPI_Service.DbContextConnection;
 using PortalAPI_Service.Repositories.AccessRepos;
 using Microsoft.EntityFrameworkCore;
-using PortalAPI_Service.DbContextConnection;
-using PortalAPI_Service.Repositories.AccessRepos;
 
 namespace PortalServer
 {

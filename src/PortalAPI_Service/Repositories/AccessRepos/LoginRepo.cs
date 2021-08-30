@@ -12,7 +12,7 @@ namespace PortalAPI_Service.Repositories.AccessRepos
 {
     public class LoginRepo : ILoginRepo
     {
-        private IDbConnection _db;
+        readonly private IDbConnection _db;
         public LoginRepo(IConfiguration configuration)
         {
             _db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
@@ -22,7 +22,7 @@ namespace PortalAPI_Service.Repositories.AccessRepos
         {
             string sql = $"SELECT * FROM users WHERE Full_name = '{username}' AND Password = '{password}' ";
             Console.WriteLine(sql);
-            return _db.Query<UsersModel>(sql).FirstOrDefault();
+            return  _db.Query<UsersModel>(sql).FirstOrDefault();
         }
 
         public List<UsersModel> AllUsers()

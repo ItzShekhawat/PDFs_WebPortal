@@ -1,0 +1,39 @@
+﻿@page "/clients"
+@inject HttpClient Http
+@using Newtonsoft.Json
+
+<h3>Clients</h3>
+
+@if(json_client is not null)
+            {
+                @json_client
+            }
+
+
+
+@code {
+    public List<ClientModel> clients = new();
+    public string json_client = null;
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        HttpResponseMessage response = await Http.GetAsync("https://localhost:44315/api/Folders/");
+        response.EnsureSuccessStatusCode();
+
+        string clients_data = await response.Content.ReadAsStringAsync();
+        json_client = JsonConvert.SerializeObject(clients_data);
+        Console.WriteLine(json_client);
+
+        /*
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(@"https://localhost:44315/api/Access/"),
+                Content = new StringContent(JsonConvert.SerializeObject(ObjTimeSheet), System.Text.Encoding.UTF8, "application/json"),
+            };
+        */
+
+
+    }
+}

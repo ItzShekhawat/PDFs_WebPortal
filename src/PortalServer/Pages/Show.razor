@@ -13,10 +13,6 @@
 
 
 
-
-
-
-
 @code {
 
     // This Will let the page know what List to show because this is going to be a dynamic Page.
@@ -25,4 +21,11 @@
 
     private string search = "";
 
+    protected override Task OnInitializedAsync()
+    {
+        // Call API  (GET)
+        base.OnInitialized();
+        return null;
+
+    }
 }

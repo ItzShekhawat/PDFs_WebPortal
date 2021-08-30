@@ -19,6 +19,6 @@ namespace PortalModels
 
         [Required]
         [StringLength(25, MinimumLength = 2)]
-        public string FK_pdf { get; set; }
+        public int FK_pdf { get; set; }
     }
 }
