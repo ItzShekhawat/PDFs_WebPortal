@@ -67,6 +67,34 @@ namespace PortalAPI_Service.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("pdf/{suborder}")]
+        public async Task<IActionResult> GetPDFAsync(string suborder)
+        {
+            try
+            {
+                var result = await _foldersRepo.GetPDFAsync(suborder);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
+        [HttpGet]
+        [Route("pdf_file/{pdf}")]
+        public async Task<IActionResult> GetPDF_FileAsync(string pdf)
+        {
+            try
+            {
+                var result = await _foldersRepo.GetSubordersAsync(pdf);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

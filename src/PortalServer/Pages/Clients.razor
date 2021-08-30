@@ -1,30 +1,69 @@
 ﻿@page "/clients"
 @inject HttpClient Http
-@using Newtonsoft.Json
+@using System.Net.Http.Json
+@inject HttpClient httpClient
+@inject NavigationManager NavigationManager  
 
 <h3>Clients</h3>
 
 @LoginMessage
 
-@if(clients.Count() >= 0)
-            {
-                foreach (var client in clients)
-                {
-                    <p>@client.Folder_name</p>
-                }
-            }
+<MudSimpleTable Hover="true" Bordered="true" Dense="false" FixedHeader="@true" Style="@(fixedheader?"height:600px;":"")">
+    <thead>
+        <tr>
+            <th> <MudIcon Style="font-size: 25px" Icon="@Icons.Filled.Folder"/>  Folder</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in clients)
+        {
+            <tr>
+                <td @onclick="()=>clicked(order.Folder_name)"  >@order.Folder_name</td>
 
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+
+<MudTable Items="clients" Hover="true" Bordered="true">
+    <HeaderContent>
+        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Folder Name</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTr>
+            @foreach (var key in clients)
+            {
+                <MudTd @onclick="()=>clicked(key.Folder_name)">@key.Folder_name</MudTd>
+            }
+        </MudTr>
+    </RowTemplate>
+</MudTable>
 
 @code {
+    [Parameter]
+    public string currentpage { get; set; }
+
+    [Parameter]
+    public string fatherpage { get; set; }
+
+
+
+
     public List<ClientModel> clients = new();
     public string json_client = null;
     public string LoginMessage { get; set; }
+    bool fixedheader = true;
 
 
     protected async override Task OnInitializedAsync()
     {
+        Console.WriteLine("https://localhost:44315/api/Folders/");
+        clients = await httpClient.GetFromJsonAsync<List<ClientModel>>("https://localhost:44315/api/Folders/");
 
-        #region "API Request and Response" 
+        #region " Heavy Code"
+        /*
+        #region "API Request and Response"
         // Preparing the httpRequestMessage to handle my request
         HttpRequestMessage httpRequestMessage = new();
         httpRequestMessage.Method = new HttpMethod("GET");
@@ -48,6 +87,16 @@
             LoginMessage = "No List";
         }
 
+        */
+        #endregion
 
     }
+
+    private void clicked(string folder_name)
+    {
+        NavigationManager.NavigateTo("view/Orders/"+ folder_name);
+    }
+
+
+
 }

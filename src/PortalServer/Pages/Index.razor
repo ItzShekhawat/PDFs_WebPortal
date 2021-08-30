@@ -63,7 +63,7 @@
 
             #endregion
 
-            
+
             if (responseStatusCode.ToString() == "OK") // If the user credentials are legit it will be true
             {
                 // DeserializeObj that came in response
@@ -85,7 +85,8 @@
         catch (Exception ex)
         {
 
-            throw;
+            Console.WriteLine(ex.Message);
+            return false; 
         }
 
 
