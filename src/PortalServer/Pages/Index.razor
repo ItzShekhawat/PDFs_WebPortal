@@ -4,10 +4,9 @@
 @inject HttpClient Http 
 @inject NavigationManager NavigationManager 
 <AuthorizeView>
-    <Authorized >
-        <p> You are going to the tables page  </p>
-        @context.User.Identity.Name 
-    </Authorized >
+    <Authorized>
+        <p>You are already Logged in ! </p>
+    </Authorized>
     <NotAuthorized Context="Login">
         <div style="max-width: 100vw; min-height: 100vh;  text-align:center">
             <EditForm Model="@model" OnValidSubmit="ValidateUser" style="display:inline-block">
@@ -32,8 +31,6 @@
 </AuthorizeView>
 
 
-
-
 @code {
 
     LoginForm model = new();
@@ -51,21 +48,25 @@
 
             string json_User = JsonConvert.SerializeObject(model);
 
+            #region "API Request and Response" 
+            // Preparing the httpRequestMessage to handle my request
             HttpRequestMessage httpRequestMessage = new();
             httpRequestMessage.Method = new HttpMethod("POST");
             httpRequestMessage.RequestUri = new Uri(@"https://localhost:44315/api/Access/");
             httpRequestMessage.Content = new StringContent(json_User);
             httpRequestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
 
-
             var response = await Http.SendAsync(httpRequestMessage);
 
             var responseStatusCode = response.StatusCode;
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            if(responseStatusCode.ToString() == "OK")
+            #endregion
+
+            
+            if (responseStatusCode.ToString() == "OK") // If the user credentials are legit it will be true
             {
-                // DeserializeObj
+                // DeserializeObj that came in response
                 JsonConvert.DeserializeObject<UsersModel>(responseBody);
 
                 await sessionStorage.SetItemAsStringAsync("Username", model.Username);
@@ -75,7 +76,7 @@
             }
             else
             {
-                LoginMessage = "Invalid username or password"; 
+                LoginMessage = "Invalid username or password";
             }
 
 
@@ -91,7 +92,7 @@
 
 
 
-}
+    }
 
 }
 

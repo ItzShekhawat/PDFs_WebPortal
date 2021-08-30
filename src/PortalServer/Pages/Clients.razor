@@ -4,35 +4,49 @@
 
 <h3>Clients</h3>
 
-@if(json_client is not null)
-            {
-                @json_client
-            }
+@LoginMessage
 
+@if(clients.Count() >= 0)
+            {
+                foreach (var client in clients)
+                {
+                    <p>@client.Folder_name</p>
+                }
+            }
 
 
 @code {
     public List<ClientModel> clients = new();
     public string json_client = null;
+    public string LoginMessage { get; set; }
+
 
     protected async override Task OnInitializedAsync()
     {
 
-        HttpResponseMessage response = await Http.GetAsync("https://localhost:44315/api/Folders/");
-        response.EnsureSuccessStatusCode();
+        #region "API Request and Response" 
+        // Preparing the httpRequestMessage to handle my request
+        HttpRequestMessage httpRequestMessage = new();
+        httpRequestMessage.Method = new HttpMethod("GET");
+        httpRequestMessage.RequestUri = new Uri(@"https://localhost:44315/api/Folders/");
 
-        string clients_data = await response.Content.ReadAsStringAsync();
-        json_client = JsonConvert.SerializeObject(clients_data);
-        Console.WriteLine(json_client);
 
-        /*
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(@"https://localhost:44315/api/Access/"),
-                Content = new StringContent(JsonConvert.SerializeObject(ObjTimeSheet), System.Text.Encoding.UTF8, "application/json"),
-            };
-        */
+        var response = await Http.SendAsync(httpRequestMessage);
+
+        var responseStatusCode = response.StatusCode;
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        #endregion
+
+        if (responseStatusCode.ToString() == "OK") // If the user credentials are legit it will be true
+        {
+            LoginMessage = "Yes List";
+            clients = JsonConvert.DeserializeObject<List<ClientModel>>(responseBody);
+        }
+        else
+        {
+            LoginMessage = "No List";
+        }
 
 
     }

@@ -27,9 +27,16 @@ namespace PortalAPI_Service.Repositories.AccessRepos
 
         public List<UsersModel> AllUsers()
         {
-            string sql = $"SELECT * FROM users ;";
+            string sql = $"SELECT * FROM users";
             Console.WriteLine(sql);
             return _db.Query<UsersModel>(sql).ToList();
+        }
+
+        public void RemoveUser(int id)
+        {
+            string sql = $"DELETE users WHERE id = @ID";
+            Console.WriteLine(sql);
+            _ = _db.Execute(sql, new { ID = id });
         }
 
     }

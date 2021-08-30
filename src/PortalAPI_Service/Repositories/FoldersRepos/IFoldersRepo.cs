@@ -9,7 +9,7 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
     public interface IFoldersRepo
     {
         // Get Info from DB
-        public Task<List<ClientModel>> GetClientsAsync();
+        public Task<IEnumerable<ClientModel>> GetClientsAsync();
         public Task<IEnumerable<OrderModel>> GetOrdersAsync(string Client);
         public Task<IEnumerable<Sub_orderModel>> GetSubordersAsync(string Order);
         public Task<IEnumerable<PDFModel>> GetPDFAsync(string Suborder);

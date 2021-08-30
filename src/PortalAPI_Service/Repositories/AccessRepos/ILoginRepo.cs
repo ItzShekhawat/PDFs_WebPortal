@@ -11,5 +11,7 @@ namespace PortalAPI_Service.Repositories.AccessRepos
         public  Task<UsersModel> CheckUser(string username, string password);
 
         public List<UsersModel> AllUsers();
+
+        public void RemoveUser(int id);
     }
 }
