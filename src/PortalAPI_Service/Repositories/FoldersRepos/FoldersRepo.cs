@@ -41,7 +41,7 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
             return result.ToList();
         }
 
-        public async Task<IEnumerable<PDF_FileModel>> GetPDF_FileAsync(string PDF)
+        public async Task<IEnumerable<PDF_FileModel>> GetPDF_FileAsync(int PDF)
         {
             var query = @"SELECT * FROM pdf_file WHERE FK_pdf = @pdf";
             var result = await _db.QueryAsync<PDF_FileModel>(query, new { pdf = PDF});

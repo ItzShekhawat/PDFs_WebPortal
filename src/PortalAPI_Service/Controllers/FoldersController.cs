@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.IO;
 
 
 namespace PortalAPI_Service.Controllers
@@ -84,17 +84,39 @@ namespace PortalAPI_Service.Controllers
 
         [HttpGet]
         [Route("pdf_file/{pdf}")]
-        public async Task<IActionResult> GetPDF_FileAsync(string pdf)
+        public async Task<IActionResult> GetPDF_FileAsync(int pdf)
         {
             try
             {
-                var result = await _foldersRepo.GetSubordersAsync(pdf);
+                var result = await _foldersRepo.GetPDF_FileAsync(pdf);
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("pdfShow/path={pdf_path},name={pdf_name}")]
+        public async Task<IActionResult> ShowPDF(string pdf_path, string pdf_name)
+        {
+
+            
+            try
+            {
+                Console.WriteLine(pdf_path+pdf_name+".pdf");
+                var stream = new FileStream(pdf_path+pdf_name+".pdf", FileMode.Open);
+                FileStreamResult StreamResponse =  new FileStreamResult(stream, "application/pdf");
+                Console.WriteLine(StreamResponse.ToString());
+                return StreamResponse;
+
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+            
         }
     }
 }

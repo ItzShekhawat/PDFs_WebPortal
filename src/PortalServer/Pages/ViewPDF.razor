@@ -1,0 +1,26 @@
+﻿@page "/views/?name={PDF_Path},name={PDF_Name}"
+<h3>viewPDF</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <embed id="embPDF" src="https://localhost:44315/api/Folders/pdfShow/path=@PDF_Path/,name=@PDF_Name" style="width:100%; height:1200px;"/>
+    </Authorized>
+    <NotAuthorized>
+
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+@code {
+    [Parameter]
+    public string PDF_Path { get; set; }
+
+    [Parameter]
+    public string PDF_Name { get; set; }
+
+    
+
+
+
+}

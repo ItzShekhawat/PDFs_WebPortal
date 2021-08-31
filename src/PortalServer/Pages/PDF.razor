@@ -3,23 +3,23 @@
 @using System.Net.Http.Json
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Mvc
+@inject PortalServer.CacheRepo.ICacheClass _ICache
 
 
-<MudTable Items="subOrders" Hover="true" Bordered="true" Filter="new Func<OrderModel, bool>(FilterFunc)">
+<MudTable Items="pdf_files" Hover="true" Bordered="true" Filter="new Func<PDF_FileModel, bool>(FilterFunc)">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudText Typo="Typo.h6">PDF Files</MudText>
         <MudSpacer />
         <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Folder Name</MudTh>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Description</MudTh>
+        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> File name</MudTh>
 
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.Folder_name)">@context.Folder_name</MudTd>
-        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.Folder_name)">@context.Description</MudTd>
+        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.File_name, context.Location_path)">@context.File_name</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -34,7 +34,7 @@
     [Parameter]
     public string fatherfolder { get; set; }
 
-    public IEnumerable<PDF_Files> pdf_files = null;
+    public IEnumerable<PDF_FileModel> pdf_files = null;
     public IEnumerable<PDFModel> pdf_folders = null;
     public string LoginMessage { get; set; }
     bool fixedheader = true;
@@ -44,28 +44,32 @@
     protected async override Task OnInitializedAsync()
     {
         Console.WriteLine("https://localhost:44315/api/Folders/");
-        pdf_folders = await httpClient.GetFromJsonAsync<IEnumerable<PDF_FileModel>>("https://localhost:44315/api/Folders/PDF/" + fatherfolder);
-        pdf_files = await httpClient.GetFromJsonAsync<IEnumerable<PDF_FileModel>>("https://localhost:44315/api/Folders/PDF_file/" + pdf_folders[0]);
-
-
+        pdf_folders = await httpClient.GetFromJsonAsync<IEnumerable<PDFModel>>("https://localhost:44315/api/Folders/PDF/" + fatherfolder);
+        foreach (var pdf in pdf_folders)
+        {
+            pdf_files = await httpClient.GetFromJsonAsync<IEnumerable<PDF_FileModel>>("https://localhost:44315/api/Folders/PDF_file/" + pdf.Id.ToString() );
+        }
     }
 
-    private void clicked(string folder_name)
-    {
-        NavigationManager.NavigateTo("view/suborder/" + folder_name);
-    }
-
-    private bool FilterFunc(OrderModel element)
+    private bool FilterFunc(PDF_FileModel element)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (element.Folder_name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (element.File_name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (element.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if ($"{element.Location_path} {element.FK_client} ".Contains(searchString))
+        if ($"{element.Location_path} {element.FK_pdf} ".Contains(searchString))
             return true;
         return false;
     }
+
+    private async Task clicked(string file_name, string path)
+    {
+        Console.WriteLine(@"https://localhost:44315/api/Folders/pdfShow/path=" + path + "\\,name=" + file_name);
+        NavigationManager.NavigateTo(@"/views/path="+path+",name="+file_name);
+
+
+
+    }
+
 
 }

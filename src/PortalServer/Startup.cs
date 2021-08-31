@@ -1,22 +1,19 @@
 using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using MudBlazor.Services;
-using PortalServer.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using PortalAPI_Service.DbContextConnection;
 using PortalAPI_Service.Repositories.AccessRepos;
-using Microsoft.EntityFrameworkCore;
+using PortalServer.CacheRepo;
+using PortalServer.Data;
+using System.Net.Http;
+
 
 namespace PortalServer
 {
@@ -37,7 +34,7 @@ namespace PortalServer
             services.AddServerSideBlazor();
 
             // Config the DB Connection string 
-            services.AddDbContext<ApplicationDbContext>(options=>
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
 
@@ -57,6 +54,9 @@ namespace PortalServer
             services.AddSingleton<HttpClient>();
 
 
+            // Caching
+            services.AddMemoryCache();
+            services.AddSingleton<ICacheClass, CacheClass>();
 
         }
 
@@ -78,6 +78,16 @@ namespace PortalServer
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    const int durationInSeconds = 60 * 60 * 24;
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+                        "public,max-age=" + durationInSeconds;
+                }
+            });
 
             // Enable Authentication and Autorization
             app.UseAuthorization();

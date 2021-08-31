@@ -13,7 +13,7 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
         public Task<IEnumerable<OrderModel>> GetOrdersAsync(string Client);
         public Task<IEnumerable<Sub_orderModel>> GetSubordersAsync(string Order);
         public Task<IEnumerable<PDFModel>> GetPDFAsync(string Suborder);
-        public Task<IEnumerable<PDF_FileModel>> GetPDF_FileAsync(string PDF);
+        public Task<IEnumerable<PDF_FileModel>> GetPDF_FileAsync(int PDF);
 
 
     }
