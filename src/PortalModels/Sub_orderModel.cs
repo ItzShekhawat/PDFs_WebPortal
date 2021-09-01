@@ -10,7 +10,7 @@ namespace PortalModels
     public class Sub_orderModel
     {
         [Key]
-        [StringLength(25)]
+        [StringLength(255)]
         public string Folder_name { get; set; }
 
         [Required]
@@ -18,7 +18,7 @@ namespace PortalModels
         public string Location_path { get; set; }
 
         [Required]
-        [StringLength(25, MinimumLength = 2)]
+        [StringLength(255, MinimumLength = 2)]
         public string FK_order { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿@page "/view/pdf/{fatherfolder}"
-@inject HttpClient Http
 @using System.Net.Http.Json
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
@@ -48,6 +47,7 @@
         foreach (var pdf in pdf_folders)
         {
             pdf_files = await httpClient.GetFromJsonAsync<IEnumerable<PDF_FileModel>>("https://localhost:44315/api/Folders/PDF_file/" + pdf.Id.ToString() );
+            
         }
     }
 
@@ -65,7 +65,9 @@
     private async Task clicked(string file_name, string path)
     {
         Console.WriteLine(@"https://localhost:44315/api/Folders/pdfShow/path=" + path + "\\,name=" + file_name);
-        NavigationManager.NavigateTo(@"/views/path="+path+",name="+file_name);
+        //NavigationManager.NavigateTo(@"/views/path="+path+",name="+file_name);
+
+        NavigationManager.NavigateTo($@"/views/{}");
 
 
 

@@ -10,7 +10,7 @@ namespace PortalModels
     public class PDF_FileModel
     {
         [Key]
-        [StringLength(25)]
+        [StringLength(255)]
         public string File_name { get; set; }
 
         [Required]
@@ -18,7 +18,6 @@ namespace PortalModels
         public string Location_path { get; set; }
 
         [Required]
-        [StringLength(25, MinimumLength = 2)]
         public int FK_pdf { get; set; }
     }
 }

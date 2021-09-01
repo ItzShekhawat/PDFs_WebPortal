@@ -19,7 +19,7 @@ namespace PortalAPI_Service.Controllers
         public FoldersController(IFoldersRepo foldersRepo)
         {
             _foldersRepo = foldersRepo;
-            
+
         }
 
 
@@ -102,21 +102,21 @@ namespace PortalAPI_Service.Controllers
         public async Task<IActionResult> ShowPDF(string pdf_path, string pdf_name)
         {
 
-            
+
             try
             {
-                Console.WriteLine(pdf_path+pdf_name+".pdf");
-                var stream = new FileStream(pdf_path+pdf_name+".pdf", FileMode.Open);
-                FileStreamResult StreamResponse =  new FileStreamResult(stream, "application/pdf");
+                Console.WriteLine(pdf_path + pdf_name + ".pdf");
+                var stream = new FileStream(pdf_path + pdf_name + ".pdf", FileMode.Open);
+                FileStreamResult StreamResponse = new FileStreamResult(stream, "application/pdf");
                 Console.WriteLine(StreamResponse.ToString());
                 return StreamResponse;
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw;
             }
-            
+
         }
     }
 }

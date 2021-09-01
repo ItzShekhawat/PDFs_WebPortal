@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PortalAPI_Service.Repositories.AccessRepos;
+using PortalAPI_Service.Repositories.DirectoryRepos;
 using PortalAPI_Service.Repositories.FoldersRepos;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,9 @@ namespace PortalAPI_Service
             // Linking the Class and the Interface
             services.AddScoped<ILoginRepo, LoginRepo>();
             services.AddScoped<IFoldersRepo, FoldersRepo>();
+            services.AddScoped<IDirRepo, DirRepo>();
+
+            services.AddMemoryCache();
 
         }
 
