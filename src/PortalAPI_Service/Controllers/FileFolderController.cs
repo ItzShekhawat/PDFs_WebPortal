@@ -24,12 +24,12 @@ namespace PortalAPI_Service.Controllers
 
 
         [HttpGet]
-        [Route("/path={F_path},{search}")]
-        public async Task<IActionResult> GetFolders(string F_path, bool search  )
+        [Route("/path={F_path},{File_or_Folder}")]
+        public async Task<IActionResult> GetFolders(string F_path, bool File_or_Folder)
         {
             try
             {
-                var Folders_path = await _Drepo.GetTheSubFolder_File(F_path, search );
+                var Folders_path = await _Drepo.GetTheSubFolder_File(F_path, File_or_Folder);
                 return Ok(Folders_path);
             }
             catch (Exception)
@@ -38,16 +38,31 @@ namespace PortalAPI_Service.Controllers
             }
         }
 
-        //https://localhost:44315/path=Z%3A%5CSPAC%5CCommesse
 
 
-        [HttpPost("/upload/")] // This should Upload the Client/Orders/Suborders/PDF Table
+        [HttpPost("/upDir/")] // This should Upload the Client/Orders/Suborders/PDF Table
 
-        public async Task<IActionResult> UploadFolders([FromBody] List<string> DirList, string TableName, bool doUpdate)
+        public async Task<IActionResult> Upload_Update_Folders([FromBody] List<string> DirList, string TableName, bool doUpdate)
         {
             var result =  await _Drepo.Upload_Update_Folders(DirList, TableName, doUpdate);
-            return result ? Ok(result) : StatusCode(404, TableName);
-            
+            return result ? Ok(result) : StatusCode(404, "Something wrong in Update/Upload Folder");
+
         }
+
+        [HttpPost("/upFile/")] // This should Upload the Client/Orders/Suborders/PDF Table
+
+        public async Task<IActionResult> Upload_UpDate_Files([FromBody] List<string> DirList, bool doUpdate)
+        {
+            var result = await _Drepo.Upload_Update_File(DirList, doUpdate);
+            return result ? Ok(result) : StatusCode(404, "Something wrong in Update/Upload File");
+
+        }
+
+
+
+
+
+        //https://localhost:44315/path=Z%3A%5CSPAC%5CCommesse
+        // "Z:\\SPAC\\Commesse\\ITT\\12ITT Macchina Pastiglie\\12001\\PDF\\Karni_Singh_Shekhawat_CV.pdf"
     }
 }
