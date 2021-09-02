@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
-
+using Microsoft.Extensions.Caching.Memory;
+using PortalAPI_Service.Repositories.DirectoryRepos;
 
 namespace PortalAPI_Service.Controllers
 {
@@ -15,11 +16,28 @@ namespace PortalAPI_Service.Controllers
     public class FoldersController : ControllerBase
     {
         private readonly IFoldersRepo _foldersRepo;
+        private readonly IMemoryCache _memoryCache;
 
-        public FoldersController(IFoldersRepo foldersRepo)
+        public FoldersController(IFoldersRepo foldersRepo, IMemoryCache memoryCache)
         {
             _foldersRepo = foldersRepo;
+            _memoryCache = memoryCache;
 
+        }
+
+
+        [HttpGet("{father_name}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
+        private async Task<IActionResult> GetSubFolders(string father_name)
+        {
+            try
+            {
+                var result = await _foldersRepo.GetClientsAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 
@@ -83,12 +101,12 @@ namespace PortalAPI_Service.Controllers
         }
 
         [HttpGet]
-        [Route("pdf_file/{pdf}")]
-        public async Task<IActionResult> GetPDF_FileAsync(int pdf)
+        [Route("pdf_file/{pdf_Id}")]
+        public async Task<IActionResult> GetPDF_FileAsync(int pdf_Id)
         {
             try
             {
-                var result = await _foldersRepo.GetPDF_FileAsync(pdf);
+                var result = await _foldersRepo.GetPDF_FileAsync(pdf_Id);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -54,5 +54,12 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
             var result = await _db.QueryAsync<Sub_orderModel>(query, new { order= Order});
             return result.ToList();
         }
+
+
+        public async Task<IEnumerable<GenericFF_Model>> GetSubFolders(string Father_Key)
+        {
+            // Make a Generic function to get the Subfolders
+            return null;
+        }
     }
 }
