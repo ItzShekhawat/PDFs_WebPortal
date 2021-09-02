@@ -42,7 +42,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             {
                 foreach (var path in DirList)
                 {
-                    if(TableName == "PDF")
+                    if(TableName == "PDF" || TableName == "pdf")
                     {
                         if (path.Contains("PDF"))  // This way Only the PDF Dir will be storad
                         {
@@ -54,25 +54,22 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                             string sql;
                             if (!doUpdate)
                             {
-                                sql = @"INSERT INTO @table VALUES('@name', '@location', '@fk')";
+                                sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
                                 var result = await _db.ExecuteAsync(sql, new { table = TableName, name = F_name, location = path, fk = FK });
 
-                                return result != 0;
                             }
                             else
                             {
-                                sql = @"SELECT Count(FF_Name) FROM @table WHERE FF_Name == '@name'";
+                                sql = $"SELECT Count(FF_Name) FROM {TableName} WHERE FF_Name = '{F_name}'";
                                 var result = await _db.QueryAsync<int>(sql, new { table = TableName, name = F_name });
 
                                 if (result.Contains(0))
                                 {
-                                    sql = @"INSERT INTO @table VALUES('@name', '@location', '@fk')";
+                                    sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
                                     var UpdateResult = await _db.ExecuteAsync(sql, new { table = TableName, name = F_name, location = path, fk = FK });
 
-                                    return UpdateResult != 0;
                                 }
 
-                                return true;
                             }
 
                         }
@@ -84,39 +81,39 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                         F_name = slash_path.Last();
                         FK = slash_path[^2];
 
-                        //Console.WriteLine($"{slash_path}\n{F_name}|\n{FK}\n{path} ");
+
+                        Console.WriteLine($"{slash_path}\n{F_name}|\n{FK}\n{path} ");
 
                         string sql;
                         if (!doUpdate)
                         {
-                            sql = @"INSERT INTO @table VALUES('@name', '@location', '@fk')";
-                            var result = await _db.ExecuteAsync(sql, new { table = TableName, name = F_name, location = path, fk = FK });
+                            sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
+                            var result = await _db.ExecuteAsync(sql);
 
-                            return result != 0;
+                            
                         }
                         else
                         {
-                            sql = @"SELECT Count(FF_Name) FROM @table WHERE FF_Name == '@name'";
+                            sql = $"SELECT Count(FF_Name) FROM {TableName} WHERE FF_Name = '{F_name}'";
                             var result = await _db.QueryAsync<int>(sql, new { table = TableName, name = F_name });
 
                             if (result.Contains(0))
                             {
-                                sql = @"INSERT INTO @table VALUES('@name', '@location', '@fk')";
-                                _ = await _db.ExecuteAsync(sql, new { table = TableName, name = F_name, location = path, fk = FK });
+                                sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
+                                _ = await _db.ExecuteAsync(sql);
                             }
-
-                            return true;
+                            
                         }
                     }
                     
                 }
 
-                return false;
+                return true;
             }
             catch (Exception ex)
             {
 
-                Console.WriteLine($"Some thing went wrong in UploadFolder try : {ex}");
+                Console.WriteLine($"Some thing went wrong in UploadFolder try : {ex.Message}");
                 return false;
             }
 
@@ -130,7 +127,8 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
             string[] slash_path;
             string F_name;
-            int FK;
+            string FK;
+            
 
             try
             {
@@ -139,52 +137,50 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
                     slash_path = path.Trim().Split(@"\");
                     F_name = slash_path.Last();
+                    Console.WriteLine(slash_path[^1]);
+                    FK = path.Substring(0, path.LastIndexOf(@"\")).Trim();
 
                     string sql;
                     if (!doUpdate)
                     {
-                        sql = @"SELECT Id FROM PDF WHERE Location_path == '@loc'";
-                        var result = await _db.QueryAsync<int>(sql, new {loc = slash_path[slash_path.Length-1]});
+                        sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK}'";
+                        var result = await _db.QueryAsync<string>(sql);
 
-
-                        sql = @"INSERT INTO pdf_file VALUES('@name', '@location', '@fk')";
-                        var InsertResult = await _db.ExecuteAsync(sql, new { name = F_name, location = path, fk = result });
-
-                        return InsertResult != 0;
+                        sql = $"INSERT INTO pdf_file VALUES('{F_name}', '{path}', '{result.Single()}')";
+                        _ = await _db.ExecuteAsync(sql);
+                     
+                       
                     }
                     else
                     {
-                        sql = @"SELECT Count(FF_Name) FROM pdf_file WHERE FF_Name == '@name'";
-                        var result = await _db.QueryAsync<int>(sql, new { name = F_name });
+                        sql = $"SELECT Count(FF_Name) FROM pdf_file WHERE FF_Name = '{F_name}'";
+                        var result = await _db.QueryAsync<int>(sql);
 
                         if (result.Contains(0))
                         {
-                            sql = @"SELECT Id FROM PDF WHERE Location_path == '@loc'";
-                            result = await _db.QueryAsync<int>(sql, new { loc = slash_path[slash_path.Length - 1] });
+                            sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK}'";
+                            result = await _db.QueryAsync<int>(sql);
 
-                            sql = @"INSERT INTO pdf_file VALUES('@name', '@location', '@fk')";
-                            var UpdateResult = await _db.ExecuteAsync(sql, new {  name = F_name, location = path, fk = result });
+                            sql = $"INSERT INTO pdf_file VALUES('{F_name}', '{path}', '{result.Single()}')";
+                            var UpdateResult = await _db.ExecuteAsync(sql);
 
-                            return UpdateResult != 0;
+                           
                         }
 
-                        return true;
+                       
                     }
 
                 }
 
+                return true;
 
             }
             catch (Exception ex)
             {
 
-                Console.WriteLine($"Some thing went wrong in UploadFolder try : {ex}");
+                Console.WriteLine($"Some thing went wrong in UploadFile : {ex.Message}");
                 return false;
             }
-
-            return false;
-            
-
         }
     }
 }

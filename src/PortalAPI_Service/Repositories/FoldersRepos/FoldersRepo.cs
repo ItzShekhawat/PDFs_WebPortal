@@ -18,14 +18,36 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
             _db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
         }
 
+        public async Task<IEnumerable<GenericFF_Model>> GetSubFolders(string Father_Key, string TableName)
+        {
+            var query = @"SELECT * FROM @table WHERE FK_Father = '@fk'";
+            Console.WriteLine(Father_Key);
+            var result = await _db.QueryAsync<GenericFF_Model>(query, new {table = TableName,  fk = Father_Key });
+            return result.ToList();
+        }
 
+
+        public async Task<IEnumerable<PDFModel>> GetPDFAsync(string Suborder)
+        {
+            var query = @"SELECT * FROM pdf WHERE FK_Father = @suborder";
+            var result = await _db.QueryAsync<PDFModel>(query, new { suborder = Suborder});
+            return result.ToList();
+        }
+
+        public async Task<IEnumerable<PDF_FileModel>> GetPDF_FileAsync(int PDF)
+        {
+            var query = @"SELECT * FROM pdf_file WHERE FK_Father = @pdf";
+            var result = await _db.QueryAsync<PDF_FileModel>(query, new { pdf = PDF});
+            return result.ToList();
+        }
+
+        /*
         public async Task<IEnumerable<ClientModel>> GetClientsAsync()
         {
             var query = "SELECT * FROM Client";
             var result = await _db.QueryAsync<ClientModel>(query);
             return result.ToList();
         }
-
         public async Task<IEnumerable<OrderModel>> GetOrdersAsync(string Client)
         {
             var query = @"SELECT * FROM Orders WHERE FK_client = @client";
@@ -33,33 +55,15 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
             var result = await _db.QueryAsync<OrderModel>(query,new { client = Client});
             return result.ToList();
         }
-
-        public async Task<IEnumerable<PDFModel>> GetPDFAsync(string Suborder)
-        {
-            var query = @"SELECT * FROM pdf WHERE FK_suborder = @suborder";
-            var result = await _db.QueryAsync<PDFModel>(query, new { suborder = Suborder});
-            return result.ToList();
-        }
-
-        public async Task<IEnumerable<PDF_FileModel>> GetPDF_FileAsync(int PDF)
-        {
-            var query = @"SELECT * FROM pdf_file WHERE FK_pdf = @pdf";
-            var result = await _db.QueryAsync<PDF_FileModel>(query, new { pdf = PDF});
-            return result.ToList();
-        }
-
         public async Task<IEnumerable<Sub_orderModel>> GetSubordersAsync(string Order)
         {
             var query = @"SELECT * FROM sub_order WHERE FK_order = @order";
             var result = await _db.QueryAsync<Sub_orderModel>(query, new { order= Order});
             return result.ToList();
         }
+        */
 
 
-        public async Task<IEnumerable<GenericFF_Model>> GetSubFolders(string Father_Key)
-        {
-            // Make a Generic function to get the Subfolders
-            return null;
-        }
+        
     }
 }

@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PortalAPI_Service.Repositories.FoldersRepos;
-using PortalModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.IO;
 using Microsoft.Extensions.Caching.Memory;
-using PortalAPI_Service.Repositories.DirectoryRepos;
+using PortalAPI_Service.Repositories.FoldersRepos;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace PortalAPI_Service.Controllers
 {
@@ -26,12 +22,20 @@ namespace PortalAPI_Service.Controllers
         }
 
 
-        [HttpGet("{father_name}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
-        private async Task<IActionResult> GetSubFolders(string father_name)
+        [HttpGet("{father_name}/{tablename}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
+        private async Task<IActionResult> GetSubFolders(string father_name, string tablename)
         {
             try
             {
-                var result = await _foldersRepo.GetClientsAsync();
+                if(!_memoryCache.TryGetValue(tablename, out var result))
+                {
+                    result = await _foldersRepo.GetSubFolders(father_name, tablename);
+
+                    //Set cache
+                    _memoryCache.Set(tablename, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
+
+                }
+
                 return Ok(result);
             }
             catch (Exception ex)
@@ -41,6 +45,8 @@ namespace PortalAPI_Service.Controllers
         }
 
 
+
+        /*
         [HttpGet]
         public async Task<IActionResult> GetClientsAsync()
         {
@@ -51,7 +57,7 @@ namespace PortalAPI_Service.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(501, ex.Message);
             }
         }
 
@@ -85,6 +91,10 @@ namespace PortalAPI_Service.Controllers
             }
         }
 
+        */
+
+
+
         [HttpGet]
         [Route("pdf/{suborder}")]
         public async Task<IActionResult> GetPDFAsync(string suborder)
@@ -114,6 +124,13 @@ namespace PortalAPI_Service.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+
+
+
+
+
+
 
         [HttpGet]
         [Route("pdfShow/path={pdf_path},name={pdf_name}")]
