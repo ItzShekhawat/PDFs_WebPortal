@@ -1,20 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Net.Http.Headers;
 using PortalAPI_Service.Repositories.FoldersRepos;
+using PortalModels;
 using System;
-using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PortalAPI_Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FoldersController : ControllerBase
+    public class ViewsController : ControllerBase
     {
         private readonly IFoldersRepo _foldersRepo;
         private readonly IMemoryCache _memoryCache;
 
-        public FoldersController(IFoldersRepo foldersRepo, IMemoryCache memoryCache)
+        public ViewsController(IFoldersRepo foldersRepo, IMemoryCache memoryCache)
         {
             _foldersRepo = foldersRepo;
             _memoryCache = memoryCache;
@@ -27,7 +30,7 @@ namespace PortalAPI_Service.Controllers
         {
             try
             {
-                if(!_memoryCache.TryGetValue(tablename, out var result))
+                if (!_memoryCache.TryGetValue(tablename, out var result))
                 {
                     result = await _foldersRepo.GetSubFolders(father_name, tablename);
 
@@ -109,6 +112,7 @@ namespace PortalAPI_Service.Controllers
             }
         }
 
+
         [HttpGet]
         [Route("pdf_file/{pdf_Id}")]
         public async Task<IActionResult> GetPDF_FileAsync(int pdf_Id)
@@ -129,21 +133,30 @@ namespace PortalAPI_Service.Controllers
 
 
 
-
-
         [HttpGet]
-        [Route("pdfShow/path={pdf_path},name={pdf_name}")]
-        public async Task<IActionResult> ShowPDF(string pdf_path, string pdf_name)
+        [Route("streamPDF")]
+        public async Task<IActionResult> ShowPDF()
         {
-
 
             try
             {
-                Console.WriteLine(pdf_path + pdf_name + ".pdf");
-                var stream = new FileStream(pdf_path + pdf_name + ".pdf", FileMode.Open);
-                FileStreamResult StreamResponse = new(stream, "application/pdf");
-                Console.WriteLine(StreamResponse.ToString());
-                return StreamResponse;
+                //Console.WriteLine($"{PDF_INFO.FF_Name}\n{PDF_INFO.Location_path}\n{PDF_INFO.FK_Father}");
+
+                if(!_memoryCache.TryGetValue("PDF", out byte[] PDF_Bytes)){
+
+                    string pdfFilePath = @"Z:\SPAC\Commesse\SIAB\305 Macchina Trote\305001\PDF\hello.pdf";
+                    PDF_Bytes = System.IO.File.ReadAllBytes(pdfFilePath);
+
+                    //var stream = new FileStream(PDF_INFO.Location_path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    //StreamResult = new(stream, "application/pdf");
+
+                    _memoryCache.Set("PDF", PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1)));
+
+                }
+
+                Console.WriteLine("Stream Done");
+
+                return new FileContentResult(PDF_Bytes, "application/pdf");
 
             }
             catch (Exception ex)

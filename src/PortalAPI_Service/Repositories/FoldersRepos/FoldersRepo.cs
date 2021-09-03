@@ -20,12 +20,25 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
 
         public async Task<IEnumerable<GenericFF_Model>> GetSubFolders(string Father_Key, string TableName)
         {
-            var query = @"SELECT * FROM @table WHERE FK_Father = '@fk'";
-            Console.WriteLine(Father_Key);
-            var result = await _db.QueryAsync<GenericFF_Model>(query, new {table = TableName,  fk = Father_Key });
+            var query = $@"SELECT * FROM {TableName} WHERE FK_Father = '{Father_Key}'";
+            //SELECT * FROM client WHERE FK_Father = 'Commesse'
+            Console.WriteLine(TableName);
+            var result = await _db.QueryAsync<GenericFF_Model>(query);
             return result.ToList();
         }
 
+        #region "Param Passing" 
+        /*
+        var param = new { Table = TableName, FK = Father_Key };
+        var parameters = new DynamicParameters(param);
+
+        var query = @"SELECT * FROM @Table WHERE FK_Father = '@FK'";
+        //SELECT * FROM client WHERE FK_Father = 'Commesse'
+        Console.WriteLine(TableName);
+        var result = await _db.QueryAsync<GenericFF_Model>(query, parameters);
+        return result.ToList();
+        */
+        #endregion
 
         public async Task<IEnumerable<PDFModel>> GetPDFAsync(string Suborder)
         {

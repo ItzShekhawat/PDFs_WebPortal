@@ -11,13 +11,13 @@ namespace PortalModels
     {
         [Key]
         [StringLength(255)]
-        public string File_name { get; set; }
+        public string FF_Name { get; set; }
 
         [Required]
         [StringLength(255, MinimumLength = 2, ErrorMessage = "No Location Path")]
         public string Location_path { get; set; }
 
         [Required]
-        public int FK_pdf { get; set; }
+        public int FK_Father { get; set; }
     }
 }
