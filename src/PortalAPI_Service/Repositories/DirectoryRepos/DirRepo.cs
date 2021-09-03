@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using PortalModels;
 using Dapper;
+using System.Text.RegularExpressions;
 
 namespace PortalAPI_Service.Repositories.DirectoryRepos
 {
@@ -28,7 +29,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
         }
 
-
+        #region "Folder Handling"
         // This function will Update or UpLoad Dir Data in the DB
         public async Task<bool> Upload_Update_Folders(List<string> DirList, string TableName, bool doUpdate)
         {
@@ -42,69 +43,54 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             {
                 foreach (var path in DirList)
                 {
-                    if(TableName == "PDF" || TableName == "pdf")
+                    slash_path = path.Trim().Split(@"\");
+                    F_name = slash_path.Last();
+                    FK = slash_path[^2];
+
+                    Console.WriteLine(DateTime.Now);
+                    if (TableName == "PDF" || TableName == "pdf")
                     {
-                        if (path.Contains("PDF"))  // This way Only the PDF Dir will be storad
+                        if (!path.Contains("PDF") || !path.Contains("pdf"))
                         {
-                            slash_path = path.Trim().Split(@"\");
-                            F_name = slash_path.Last();
-                            FK = slash_path[^2];
-
-
-                            string sql;
-                            if (!doUpdate)
-                            {
-                                sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
-                                var result = await _db.ExecuteAsync(sql, new { table = TableName, name = F_name, location = path, fk = FK });
-
-                            }
-                            else
-                            {
-                                sql = $"SELECT Count(FF_Name) FROM {TableName} WHERE FF_Name = '{F_name}'";
-                                var result = await _db.QueryAsync<int>(sql, new { table = TableName, name = F_name });
-
-                                if (result.Contains(0))
-                                {
-                                    sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
-                                    var UpdateResult = await _db.ExecuteAsync(sql, new { table = TableName, name = F_name, location = path, fk = FK });
-
-                                }
-
-                            }
-
+                            Console.WriteLine("Element don't have a pdf in thair name");
+                            continue;
                         }
-                        
+                    }
+                    if (TableName == "client" || TableName == "Client")
+                    {
+                        int count = path.Count(c => Char.IsDigit(c));
+                        if (count >= 2)
+                        {
+                            Console.WriteLine("Element has more the 2 numbers in the name");
+                            continue;
+                        }
+
+                    }
+
+
+                    Console.WriteLine($"{slash_path}\n{F_name}|\n{FK}\n{path} ");
+
+                    string sql;
+                    if (!doUpdate)
+                    {
+                        sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
+                        var result = await _db.ExecuteAsync(sql);
+
+
                     }
                     else
                     {
-                        slash_path = path.Trim().Split(@"\");
-                        F_name = slash_path.Last();
-                        FK = slash_path[^2];
+                        sql = $"SELECT Count(FF_Name) FROM {TableName} WHERE FF_Name = '{F_name}'";
+                        var result = await _db.QueryAsync<int>(sql, new { table = TableName, name = F_name });
 
-
-                        Console.WriteLine($"{slash_path}\n{F_name}|\n{FK}\n{path} ");
-
-                        string sql;
-                        if (!doUpdate)
+                        if (result.Contains(0))
                         {
                             sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
-                            var result = await _db.ExecuteAsync(sql);
-
-                            
+                            _ = await _db.ExecuteAsync(sql);
                         }
-                        else
-                        {
-                            sql = $"SELECT Count(FF_Name) FROM {TableName} WHERE FF_Name = '{F_name}'";
-                            var result = await _db.QueryAsync<int>(sql, new { table = TableName, name = F_name });
 
-                            if (result.Contains(0))
-                            {
-                                sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
-                                _ = await _db.ExecuteAsync(sql);
-                            }
-                            
-                        }
                     }
+                    
                     
                 }
 
@@ -118,8 +104,12 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             }
 
         }
+        #endregion
 
 
+
+
+        #region " File Handling"
         // This function will Update or UpLoad File Data in the DB
         public async Task<bool> Upload_Update_File(List<string> FileList, bool doUpdate)
         {
@@ -182,5 +172,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                 return false;
             }
         }
+
+        #endregion
     }
 }

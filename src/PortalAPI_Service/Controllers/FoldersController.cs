@@ -23,7 +23,7 @@ namespace PortalAPI_Service.Controllers
 
 
         [HttpGet("{father_name}/{tablename}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
-        private async Task<IActionResult> GetSubFolders(string father_name, string tablename)
+        public async Task<IActionResult> GetSubFolders(string father_name, string tablename)
         {
             try
             {
@@ -33,7 +33,6 @@ namespace PortalAPI_Service.Controllers
 
                     //Set cache
                     _memoryCache.Set(tablename, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
-
                 }
 
                 return Ok(result);
@@ -142,14 +141,14 @@ namespace PortalAPI_Service.Controllers
             {
                 Console.WriteLine(pdf_path + pdf_name + ".pdf");
                 var stream = new FileStream(pdf_path + pdf_name + ".pdf", FileMode.Open);
-                FileStreamResult StreamResponse = new FileStreamResult(stream, "application/pdf");
+                FileStreamResult StreamResponse = new(stream, "application/pdf");
                 Console.WriteLine(StreamResponse.ToString());
                 return StreamResponse;
 
             }
             catch (Exception ex)
             {
-                throw;
+                return StatusCode(501, ex.Message);
             }
 
         }
