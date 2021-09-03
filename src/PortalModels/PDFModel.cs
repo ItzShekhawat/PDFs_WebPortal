@@ -14,7 +14,7 @@ namespace PortalModels
 
         [Required]
         [StringLength(255)]
-        public string Folder_name { get; set; }
+        public string FF_Name { get; set; }
 
         [Required]
         [StringLength(255, MinimumLength = 2, ErrorMessage = "No Location Path")]
@@ -22,6 +22,6 @@ namespace PortalModels
 
         [Required]
         [StringLength(255, MinimumLength = 2)]
-        public string FK_suborder { get; set; }
+        public string FK_Father { get; set; }
     }
 }

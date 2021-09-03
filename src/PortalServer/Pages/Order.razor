@@ -1,11 +1,11 @@
-﻿@page "/view/Orders/{fatherfolder}"
+﻿@page "/view/orders/{FK_Father}"
 @inject HttpClient Http
 @using System.Net.Http.Json
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
 
 
-<MudTable Items="subOrders" Hover="true" Bordered="true" Filter="new Func<OrderModel, bool>(FilterFunc)">
+<MudTable Items="subOrders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Periodic Elements</MudText>
         <MudSpacer />
@@ -18,8 +18,7 @@
 
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.Folder_name)">@context.Folder_name</MudTd>
-        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.Folder_name)">@context.Description</MudTd>
+        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name)">@context.FF_Name</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -32,9 +31,9 @@
 @code
 {
     [Parameter]
-    public string fatherfolder { get; set; }
+    public string FK_Father { get; set; }
 
-    public IEnumerable<OrderModel> subOrders = null;
+    public IEnumerable<GenericFF_Model> subOrders = null;
     public string LoginMessage { get; set; }
     bool fixedheader = true;
     public string searchString = "";
@@ -43,7 +42,7 @@
     protected async override Task OnInitializedAsync()
     {
         Console.WriteLine("https://localhost:44315/api/Folders/");
-        subOrders = await httpClient.GetFromJsonAsync<IEnumerable<OrderModel>>("https://localhost:44315/api/Folders/Orders/" + fatherfolder);
+        subOrders = await httpClient.GetFromJsonAsync<IEnumerable<GenericFF_Model>>("https://localhost:44315/api/Folders/Orders/" + FK_Father);
 
     }
 
@@ -52,15 +51,13 @@
         NavigationManager.NavigateTo("view/suborder/" + folder_name);
     }
 
-    private bool FilterFunc(OrderModel element)
+    private bool FilterFunc(GenericFF_Model element)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (element.Folder_name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (element.FF_Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (element.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if ($"{element.Location_path} {element.FK_client} ".Contains(searchString))
+        if ($"{element.Location_path} {element.FK_Father} ".Contains(searchString))
             return true;
         return false;
     }

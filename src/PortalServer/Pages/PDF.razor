@@ -1,4 +1,4 @@
-﻿@page "/view/pdf/{fatherfolder}"
+﻿@page "/pdfs/{FK_Father}"
 @using System.Net.Http.Json
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
@@ -18,7 +18,7 @@
 
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.File_name, context.Location_path)">@context.File_name</MudTd>
+        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FF_Name</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -31,7 +31,7 @@
 @code
 {
     [Parameter]
-    public string fatherfolder { get; set; }
+    public string FK_Father { get; set; }
 
     public IEnumerable<PDF_FileModel> pdf_files = null;
     public IEnumerable<PDFModel> pdf_folders = null;
@@ -43,11 +43,11 @@
     protected async override Task OnInitializedAsync()
     {
         Console.WriteLine("https://localhost:44315/api/Folders/");
-        pdf_folders = await httpClient.GetFromJsonAsync<IEnumerable<PDFModel>>("https://localhost:44315/api/Folders/PDF/" + fatherfolder);
+        pdf_folders = await httpClient.GetFromJsonAsync<IEnumerable<PDFModel>>("https://localhost:44315/api/Folders/PDF/" + FK_Father);
         foreach (var pdf in pdf_folders)
         {
             pdf_files = await httpClient.GetFromJsonAsync<IEnumerable<PDF_FileModel>>("https://localhost:44315/api/Folders/PDF_file/" + pdf.Id.ToString() );
-            
+
         }
     }
 
@@ -55,9 +55,9 @@
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (element.File_name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (element.FF_Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if ($"{element.Location_path} {element.FK_pdf} ".Contains(searchString))
+        if ($"{element.Location_path} {element.FK_Father} ".Contains(searchString))
             return true;
         return false;
     }
@@ -65,12 +65,7 @@
     private async Task clicked(string file_name, string path)
     {
         Console.WriteLine(@"https://localhost:44315/api/Folders/pdfShow/path=" + path + "\\,name=" + file_name);
-        //NavigationManager.NavigateTo(@"/views/path="+path+",name="+file_name);
-
-        NavigationManager.NavigateTo($@"/views/{}");
-
-
-
+        NavigationManager.NavigateTo(@"/views/path=" + path + ",name=" + file_name);
     }
 
 

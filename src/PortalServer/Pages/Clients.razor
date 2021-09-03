@@ -1,65 +1,54 @@
-﻿@page "/clients"
+﻿@page "/clients/"
 @inject HttpClient Http
 @using System.Net.Http.Json
 @inject HttpClient httpClient
-@inject NavigationManager NavigationManager  
-
-<h3>Clients</h3>
-
-@LoginMessage
-
-<MudSimpleTable Hover="true" Bordered="true" Dense="false" FixedHeader="@true" Style="@(fixedheader?"height:600px;":"")">
-    <thead>
-        <tr>
-            <th> <MudIcon Style="font-size: 25px" Icon="@Icons.Filled.Folder"/>  Folder</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in clients)
-        {
-            <tr>
-                <td @onclick="()=>clicked(order.Folder_name)"  >@order.Folder_name</td>
-
-            </tr>
-        }
-    </tbody>
-</MudSimpleTable>
+@inject NavigationManager NavigationManager
 
 
-<MudTable Items="clients" Hover="true" Bordered="true">
+<h3>Search for It </h3>
+
+<br />
+<MudTable Items="clients" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Tabella @Table_Name</MudText>
+        <MudSpacer />
+        <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
     <HeaderContent>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Folder Name</MudTh>
+        <MudTh> <MudIcon Style="font-size: 20px" Icon="@Icons.Rounded.FolderOpen" /> Folder</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTr>
-            @foreach (var key in clients)
-            {
-                <MudTd @onclick="()=>clicked(key.Folder_name)">@key.Folder_name</MudTd>
-            }
+            <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name)">@context.FF_Name</MudTd>
         </MudTr>
     </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
 </MudTable>
 
 @code {
     [Parameter]
-    public string currentpage { get; set; }
+    public string Table_Name { get; set; }
 
     [Parameter]
-    public string fatherpage { get; set; }
+    public string FK_Father { get; set; }
 
 
-
-
-    public List<ClientModel> clients = new();
-    public string json_client = null;
-    public string LoginMessage { get; set; }
-    bool fixedheader = true;
+    // Public var
+    public List<GenericFF_Model> clients = new();
+    public string InfoMessage { get; set; }
+    public string searchString = "";
 
 
     protected async override Task OnInitializedAsync()
     {
-        Console.WriteLine("https://localhost:44315/api/Folders/");
-        clients = await httpClient.GetFromJsonAsync<List<ClientModel>>("https://localhost:44315/api/Folders/");
+        //Console.WriteLine("https://localhost:44315/api/Folders/");
+        clients = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/Commesse/client");
 
         #region " Heavy Code"
         /*
@@ -92,11 +81,27 @@
 
     }
 
-    private void clicked(string folder_name)
+    private bool FilterFunc(GenericFF_Model element)
     {
-        NavigationManager.NavigateTo("view/Orders/"+ folder_name);
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.FF_Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.Location_path} {element.FK_Father} ".Contains(searchString))
+            return true;
+        return false;
     }
 
+    private void clicked(string FK_Father)
+    {
+        NavigationManager.NavigateTo("view/orders/" + FK_Father);
+    }
 
+    /*
+    private bool FilterDB(string )
+    {
+
+    }
+    */
 
 }

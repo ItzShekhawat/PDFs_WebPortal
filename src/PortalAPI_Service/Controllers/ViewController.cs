@@ -28,13 +28,14 @@ namespace PortalAPI_Service.Controllers
         [HttpGet("{father_name}/{tablename}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
         public async Task<IActionResult> GetSubFolders(string father_name, string tablename)
         {
+
             try
             {
                 if (!_memoryCache.TryGetValue(tablename, out var result))
                 {
                     result = await _foldersRepo.GetSubFolders(father_name, tablename);
 
-                    //Set cache
+                    //Set in  cache
                     _memoryCache.Set(tablename, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
                 }
 
@@ -45,7 +46,6 @@ namespace PortalAPI_Service.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
 
 
         /*
@@ -96,7 +96,6 @@ namespace PortalAPI_Service.Controllers
         */
 
 
-
         [HttpGet]
         [Route("pdf/{suborder}")]
         public async Task<IActionResult> GetPDFAsync(string suborder)
@@ -130,40 +129,44 @@ namespace PortalAPI_Service.Controllers
 
 
 
-
-
-
         [HttpGet]
-        [Route("streamPDF")]
-        public async Task<IActionResult> ShowPDF()
+        [Route("streamPDF/{File_path}")]
+        public async Task<IActionResult> ShowPDF(string File_path)
         {
-
-            try
+            if (string.IsNullOrEmpty(File_path))
             {
-                //Console.WriteLine($"{PDF_INFO.FF_Name}\n{PDF_INFO.Location_path}\n{PDF_INFO.FK_Father}");
+                return StatusCode(404, File_path);
+            }
+            else
+            {
+                string[] slash_path = File_path.Trim().Split(@"\");
+                string name = slash_path[^1];
+                try
+                {
+                    //Console.WriteLine($"{PDF_INFO.FF_Name}\n{PDF_INFO.Location_path}\n{PDF_INFO.FK_Father}");
 
-                if(!_memoryCache.TryGetValue("PDF", out byte[] PDF_Bytes)){
+                    if (!_memoryCache.TryGetValue("PDF", out byte[] PDF_Bytes))
+                    {
+                        string pdfFilePath = File_path;
+                        PDF_Bytes = System.IO.File.ReadAllBytes(pdfFilePath);
 
-                    string pdfFilePath = @"Z:\SPAC\Commesse\SIAB\305 Macchina Trote\305001\PDF\hello.pdf";
-                    PDF_Bytes = System.IO.File.ReadAllBytes(pdfFilePath);
+                        //var stream = new FileStream(PDF_INFO.Location_path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        //StreamResult = new(stream, "application/pdf");
 
-                    //var stream = new FileStream(PDF_INFO.Location_path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    //StreamResult = new(stream, "application/pdf");
+                        _memoryCache.Set(name, PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1)));
+                    }
 
-                    _memoryCache.Set("PDF", PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1)));
+                    Console.WriteLine("Stream Done");
+
+                    return new FileContentResult(PDF_Bytes, "application/pdf");
 
                 }
-
-                Console.WriteLine("Stream Done");
-
-                return new FileContentResult(PDF_Bytes, "application/pdf");
+                catch (Exception ex)
+                {
+                    return StatusCode(501, ex.Message);
+                }
 
             }
-            catch (Exception ex)
-            {
-                return StatusCode(501, ex.Message);
-            }
-
         }
     }
 }
