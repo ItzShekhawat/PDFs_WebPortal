@@ -44,9 +44,11 @@ namespace PortalServer.Data
         }
 
 
-        public void SetUserAdAuthenticated(string username)
+        public void SetUserAdAuthenticated(string username, bool role_token)
         {
-            var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username) }, "apiauth_type");
+            string role = "";
+            if (role_token) { role = "User"; } else { role = "Admin";  }; 
+            var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username, ClaimTypes.Role, role) }, "apiauth_type");
 
             var user = new ClaimsPrincipal(identity);
 

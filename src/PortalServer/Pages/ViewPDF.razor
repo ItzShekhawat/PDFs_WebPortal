@@ -1,14 +1,12 @@
 ﻿@page "/views/"
 
-<h3>viewPDF</h3>
-
 <AuthorizeView>
     <Authorized>
-        <!-- <embed id="embPDF" src="https://localhost:44315/api/Folders/pdfShow/path=@PDF_Path/,name=@PDF_Name" style="width:100%; height:1200px;"/> -->
+       
         <embed src="https://localhost:44315/api/Views/streamPDF/Z%3A%5CSPAC%5CCommesse%5CSIAB%5C305%20Macchina%20Trote%5C305001%5CPDF%5Chello.pdf" style="width: 100%; height:1200px" />
     </Authorized>
     <NotAuthorized>
-        <embed src="https://localhost:44315/api/Views/streamPDF/Z:/SPAC/Commesse/SIAB/305 Macchina Trote/305001/PDF/hello.pdf" style="width: 100%; height:1200px" />
+             
     </NotAuthorized>
 </AuthorizeView>
 

@@ -50,10 +50,11 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     Console.WriteLine(DateTime.Now);
                     if (TableName == "PDF" || TableName == "pdf")
                     {
-                        if (!path.Contains("PDF") || !path.Contains("pdf"))
+                        if (!F_name.Contains("PDF"))
                         {
                             Console.WriteLine("Element don't have a pdf in thair name");
                             continue;
+                            
                         }
                     }
                     if (TableName == "client" || TableName == "Client")
@@ -118,12 +119,17 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             string[] slash_path;
             string F_name;
             string FK;
-            
+            string cleanPath;
+
+
 
             try
             {
                 foreach(var path in FileList)
                 {
+                    Console.WriteLine(path);
+                    cleanPath = path.Replace(@"\\", @"\");
+                    Console.WriteLine(cleanPath);
 
                     slash_path = path.Trim().Split(@"\");
                     F_name = slash_path.Last();
@@ -133,33 +139,33 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     string sql;
                     if (!doUpdate)
                     {
-                        sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK}'";
-                        var result = await _db.QueryAsync<string>(sql);
+                        sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK.Replace(@"\\", @"\")}'";
+                        var result = await _db.QueryAsync<int>(sql);
 
-                        sql = $"INSERT INTO pdf_file VALUES('{F_name}', '{path}', '{result.Single()}')";
+                        Console.WriteLine(path);
+                        Console.WriteLine(result.Single());
+                        sql = $@"INSERT INTO pdf_file VALUES('{F_name}', '{cleanPath}', '{result.Single()}')";
                         _ = await _db.ExecuteAsync(sql);
-                     
-                       
+
                     }
                     else
                     {
                         sql = $"SELECT Count(FF_Name) FROM pdf_file WHERE FF_Name = '{F_name}'";
-                        var result = await _db.QueryAsync<int>(sql);
-
-                        if (result.Contains(0))
+                        var resultCount = await _db.QueryAsync(sql);
+                        Console.WriteLine(resultCount.Single()); 
+                        if (resultCount.FirstOrDefault() == "0")
                         {
-                            sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK}'";
-                            result = await _db.QueryAsync<int>(sql);
+                            sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK.Replace(@"\\", @"\")}'";
+                            var resultID = await _db.QueryAsync<int>(sql);
 
-                            sql = $"INSERT INTO pdf_file VALUES('{F_name}', '{path}', '{result.Single()}')";
+                            sql = $"INSERT INTO pdf_file VALUES('{F_name}', '{cleanPath}', '{resultID.Single()}')";
                             var UpdateResult = await _db.ExecuteAsync(sql);
-
-                           
                         }
-
-                       
+                        else
+                        {
+                            return false;
+                        }
                     }
-
                 }
 
                 return true;

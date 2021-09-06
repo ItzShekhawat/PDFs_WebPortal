@@ -5,7 +5,14 @@
 @inject NavigationManager NavigationManager 
 <AuthorizeView>
     <Authorized>
-        <p>You are already Logged in ! </p>
+        @if (UserDetails.Access_token == true)
+        {
+            NavigationManager.NavigateTo("/Admin");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
     </Authorized>
     <NotAuthorized Context="Login">
         <div style="max-width: 100vw; min-height: 100vh;  text-align:center">
@@ -36,6 +43,7 @@
     LoginForm model = new();
     bool success;
     public string LoginMessage { get; set; }
+    UsersModel UserDetails;
 
 
 
@@ -67,12 +75,21 @@
             if (responseStatusCode.ToString() == "OK") // If the user credentials are legit it will be true
             {
                 // DeserializeObj that came in response
-                JsonConvert.DeserializeObject<UsersModel>(responseBody);
+                UserDetails = JsonConvert.DeserializeObject<UsersModel>(responseBody);
 
                 await sessionStorage.SetItemAsStringAsync("Username", model.Username);
-                ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(model.Username);
+                ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(UserDetails.Full_name, UserDetails.Access_token );
 
-                NavigationManager.NavigateTo("/clients");
+                if(UserDetails.Access_token == true)
+                {
+                    NavigationManager.NavigateTo("/Admin");
+                }
+                else
+                {
+                    Console.WriteLine("Userrrrrrrrrrrr!!!!!!!");
+                }
+                
+                
             }
             else
             {

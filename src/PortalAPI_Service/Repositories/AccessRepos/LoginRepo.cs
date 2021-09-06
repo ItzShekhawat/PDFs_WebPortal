@@ -22,7 +22,7 @@ namespace PortalAPI_Service.Repositories.AccessRepos
         {
             string sql = $"SELECT * FROM users WHERE Full_name = '{username}' AND Password = '{password}' ";
             Console.WriteLine(sql);
-            return  _db.Query<UsersModel>(sql).FirstOrDefault();
+            return await _db.QueryFirstAsync<UsersModel>(sql);
         }
 
         public List<UsersModel> AllUsers()

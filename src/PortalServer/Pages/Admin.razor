@@ -1,0 +1,41 @@
+﻿@page "/Admin/"
+@using System.Net.Http.Json
+@inject HttpClient httpClient
+<h3>Admin</h3>
+
+
+
+<MudButton Disabled="@_processing" OnClick="ProcessSomething" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" FullWidth="true">
+
+    @if (_processing)
+    {
+        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+        <MudText Class="ms-2">Processing</MudText>
+    }
+    else
+    {
+        <MudText>Update</MudText>
+    }
+</MudButton>
+
+
+
+
+
+@code {
+    private bool _processing = false;
+    List<String> InfoList = new();
+
+    async Task ProcessSomething()
+    {
+        _processing = true;
+
+        // Call the update API
+        InfoList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/api/Views/client/Commesse");
+
+
+
+
+        _processing = false;
+    }
+}
