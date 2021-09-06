@@ -52,9 +52,5 @@ namespace PortalAPI_Service.Controllers
 
         }
 
-
-
-
-
     }
 }

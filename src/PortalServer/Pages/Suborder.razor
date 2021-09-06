@@ -1,4 +1,4 @@
-﻿@page "/view/orders/{FK_Father}"
+﻿@page "/view/suborder/{FK_Father}"
 @inject HttpClient Http
 @using System.Net.Http.Json
 @inject HttpClient httpClient
@@ -7,9 +7,9 @@
 
 
 
-<MudTable Items="orders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
+<MudTable Items="suborders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Table Orders</MudText>
+        <MudText Typo="Typo.h6">Table Suborder</MudText>
         <MudSpacer />
         <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -33,20 +33,20 @@
     [Parameter]
     public string FK_Father { get; set; }
 
-    public List<GenericFF_Model> orders = null;
+    public List<GenericFF_Model> suborders = null;
     public string searchString = "";
 
 
     protected async override Task OnInitializedAsync()
     {
         //Console.WriteLine("https://localhost:44315/api/Folders/");
-        orders = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>("https://localhost:44315/api/Views/orders/" + CustomProtection.Encode(FK_Father));
+        suborders = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/suborder/" + CustomProtection.Encode(FK_Father));
 
     }
 
-    private void clicked(string folder_name)
+    private void clicked(string father_name)
     {
-        NavigationManager.NavigateTo("view/suborder/" + CustomProtection.Decode(folder_name));
+        NavigationManager.NavigateTo("view/PDF/" + CustomProtection.Decode(father_name));
     }
 
     private bool FilterFunc(GenericFF_Model element)

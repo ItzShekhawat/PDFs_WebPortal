@@ -3,6 +3,7 @@
 @using System.Net.Http.Json
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
+@inject CustomIDataProtection CustomProtection
 
 
 <h3>Search for It </h3>
@@ -48,7 +49,7 @@
     protected async override Task OnInitializedAsync()
     {
         //Console.WriteLine("https://localhost:44315/api/Folders/");
-        clients = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/Commesse/client");
+        clients = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/client/Commesse");
 
         #region " Heavy Code"
         /*
@@ -92,9 +93,9 @@
         return false;
     }
 
-    private void clicked(string FK_Father)
+    private void clicked(string Father_Name)
     {
-        NavigationManager.NavigateTo("view/orders/" + FK_Father);
+        NavigationManager.NavigateTo("view/orders/" + CustomProtection.Decode(Father_Name));
     }
 
     /*

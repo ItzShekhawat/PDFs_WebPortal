@@ -7,6 +7,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace PortalAPI_Service.Controllers
 {
@@ -16,17 +17,18 @@ namespace PortalAPI_Service.Controllers
     {
         private readonly IFoldersRepo _foldersRepo;
         private readonly IMemoryCache _memoryCache;
+     
+
 
         public ViewsController(IFoldersRepo foldersRepo, IMemoryCache memoryCache)
         {
             _foldersRepo = foldersRepo;
             _memoryCache = memoryCache;
-
         }
 
 
-        [HttpGet("{father_name}/{tablename}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
-        public async Task<IActionResult> GetSubFolders(string father_name, string tablename)
+        [HttpGet("{tablename}/{father_name}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
+        public async Task<IActionResult> GetSubFolders(string tablename, string father_name)
         {
 
             try
@@ -36,7 +38,7 @@ namespace PortalAPI_Service.Controllers
                     result = await _foldersRepo.GetSubFolders(father_name, tablename);
 
                     //Set in  cache
-                    _memoryCache.Set(tablename, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
+                    _memoryCache.Set(father_name, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
                 }
 
                 return Ok(result);
@@ -133,6 +135,7 @@ namespace PortalAPI_Service.Controllers
         [Route("streamPDF/{File_path}")]
         public async Task<IActionResult> ShowPDF(string File_path)
         {
+            Console.WriteLine(File_path);
             if (string.IsNullOrEmpty(File_path))
             {
                 return StatusCode(404, File_path);
@@ -145,15 +148,14 @@ namespace PortalAPI_Service.Controllers
                 {
                     //Console.WriteLine($"{PDF_INFO.FF_Name}\n{PDF_INFO.Location_path}\n{PDF_INFO.FK_Father}");
 
-                    if (!_memoryCache.TryGetValue("PDF", out byte[] PDF_Bytes))
+                    if (!_memoryCache.TryGetValue(File_path, out byte[] PDF_Bytes))
                     {
-                        string pdfFilePath = File_path;
-                        PDF_Bytes = System.IO.File.ReadAllBytes(pdfFilePath);
+                        PDF_Bytes = System.IO.File.ReadAllBytes(File_path);
 
                         //var stream = new FileStream(PDF_INFO.Location_path, FileMode.Open, FileAccess.Read, FileShare.Read);
                         //StreamResult = new(stream, "application/pdf");
 
-                        _memoryCache.Set(name, PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1)));
+                        _memoryCache.Set(File_path, PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
                     }
 
                     Console.WriteLine("Stream Done");
@@ -168,5 +170,7 @@ namespace PortalAPI_Service.Controllers
 
             }
         }
+
+
     }
 }
