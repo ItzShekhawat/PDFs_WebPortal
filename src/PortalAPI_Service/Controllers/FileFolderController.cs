@@ -24,17 +24,23 @@ namespace PortalAPI_Service.Controllers
 
 
         [HttpGet]
-        [Route("/path={F_path},{File_or_Folder}")]
-        public async Task<IActionResult> GetFolders(string F_path, bool File_or_Folder)
+        [Route("/")]
+        public async Task<IActionResult> GetFolders(string @F_path)
         {
+            var slash_path = F_path.Trim().Split(@"\");
+            var F_name = slash_path.Last();
+            bool isFolder = true;
+
+            if (F_name.Contains("PDF") || F_name.Contains("pdf")) { isFolder = false;  }
+
             try
             {
-                var Folders_path = await _Drepo.GetTheSubFolder_File(F_path, File_or_Folder);
+                var Folders_path = await _Drepo.GetTheSubFolder_File(F_path, isFolder);
                 return Ok(Folders_path);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(501, F_path);
+                return StatusCode(501, ex);
             }
         }
 

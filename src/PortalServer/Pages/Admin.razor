@@ -24,14 +24,155 @@
 
 @code {
     private bool _processing = false;
-    List<String> InfoList = new();
+    List<string> InfoList = new();
+    List<string> ClientsList;
+    List<string> OrdersList;
+    List<string> SuborderList;
+    List<string> PDFList;
+    List<string> PDF_files;
+    string root_path = @"S:\SPAC\Commesse";
+
 
     async Task ProcessSomething()
     {
         _processing = true;
+        string[] slash_path;
+        string F_name = "";
+        bool isFolder = true;
+
+        ClientsList = Directory.GetDirectories(root_path).ToList();
+        Console.WriteLine(ClientsList.Count());
+
+        string json_User = JsonConvert.SerializeObject(ClientsList);
+
+
+        // Preparing the httpRequestMessage to handle my request
+        HttpRequestMessage httpRequestMessage = new();
+        httpRequestMessage.Method = new HttpMethod("POST");
+        httpRequestMessage.RequestUri = new Uri(@"https://localhost:44315/upDir?TableName=client&doUpdate=true");
+        httpRequestMessage.Content = new StringContent(json_User);
+        httpRequestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+        var response = await httpClient.SendAsync(httpRequestMessage);
+
+        var responseStatusCode = response.StatusCode;
+
+        if(responseStatusCode.ToString() == "OK")
+        {
+            response.Dispose();
+
+            foreach (var client in ClientsList)
+            {
+                if (client.Contains("00_SpacEPF") || client.Contains("Aggiornamenti 2021"))// Temporary 
+                {
+                    continue;
+                }
+
+
+                OrdersList = Directory.GetDirectories(client).ToList();
+                json_User = JsonConvert.SerializeObject(OrdersList);
+                Console.WriteLine(json_User);
+                HttpRequestMessage httpRequestMessageOrder = new();
+                httpRequestMessageOrder.Method = new HttpMethod("POST");
+                httpRequestMessageOrder.RequestUri = new Uri(@"https://localhost:44315/upDir?TableName=orders&doUpdate=true");
+                httpRequestMessageOrder.Content = new StringContent(json_User);
+                httpRequestMessageOrder.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                response = await httpClient.SendAsync(httpRequestMessageOrder);
+
+                responseStatusCode = response.StatusCode;
+                if (responseStatusCode.ToString() == "OK")
+                {
+                    response.Dispose();
+
+                    foreach (var order in OrdersList)
+                    {
+                        SuborderList = Directory.GetDirectories(order).ToList();
+                        json_User = JsonConvert.SerializeObject(SuborderList);
+                        HttpRequestMessage httpRequestMessageSub = new();
+                        httpRequestMessageSub.Method = new HttpMethod("POST");
+                        httpRequestMessageSub.RequestUri = new Uri(@"https://localhost:44315/upDir?TableName=suborder&doUpdate=true");
+                        httpRequestMessageSub.Content = new StringContent(json_User);
+                        httpRequestMessageSub.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                        response = await httpClient.SendAsync(httpRequestMessageSub);
+
+                        responseStatusCode = response.StatusCode;
+                        if (responseStatusCode.ToString() == "OK")
+                        {
+                            response.Dispose();
+
+                            foreach (var suborder in SuborderList)
+                            {
+                                PDFList = Directory.GetDirectories(suborder).ToList();
+                                json_User = JsonConvert.SerializeObject(PDFList);
+                                HttpRequestMessage httpRequestMessagePDF = new();
+                                httpRequestMessagePDF.Method = new HttpMethod("POST");
+                                httpRequestMessagePDF.RequestUri = new Uri(@"https://localhost:44315/upDir?TableName=pdf&doUpdate=true");
+                                httpRequestMessagePDF.Content = new StringContent(json_User);
+                                httpRequestMessagePDF.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                                response = await httpClient.SendAsync(httpRequestMessagePDF);
+
+                                responseStatusCode = response.StatusCode;
+                                if (responseStatusCode.ToString() == "OK")
+                                {
+                                    response.Dispose();
+
+                                    foreach (var pdf in PDFList)
+                                    {
+                                        PDF_files = Directory.GetDirectories(pdf).ToList();
+                                        json_User = JsonConvert.SerializeObject(PDF_files);
+                                        HttpRequestMessage httpRequestMessagePDF_File = new();
+                                        httpRequestMessagePDF_File.Method = new HttpMethod("POST");
+                                        httpRequestMessagePDF_File.RequestUri = new Uri(@"https://localhost:44315/upFile?doUpdate=true");
+                                        httpRequestMessagePDF_File.Content = new StringContent(json_User);
+                                        httpRequestMessagePDF_File.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                                        response = await httpClient.SendAsync(httpRequestMessagePDF_File);
+
+                                        responseStatusCode = response.StatusCode;
+                                        if (responseStatusCode.ToString() == "OK")
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+
+
+
+
+        foreach (var client in ClientsList)
+        {
+            //          slash_path = client.Trim().Split(@"\");
+            //            F_name = slash_path.Last();
+
+            //if (F_name.Contains("PDF") || F_name.Contains("pdf")) { isFolder = false; }
+
+            //var responseBody = await response.Content.ReadAsStringAsync();
+
+            /*
+                await httpClient.GetFromJsonAsync(@"https://localhost:44315/api/FileFolder/upDir/");
+                GeneralList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/api/FileFolder/path="+client);
+                foreach(var orders in GeneralList)
+                {
+
+                }
+            */
+
+        }
 
         // Call the update API
-        InfoList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/api/Views/client/Commesse");
+        //InfoList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/api/Views/client/Commesse");
 
 
 

@@ -49,13 +49,61 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
                     Console.WriteLine(DateTime.Now);
                     if (TableName == "PDF" || TableName == "pdf")
-                    {
-                        if (!F_name.Contains("PDF"))
+                    {   /*
+                        if (F_name != "PDF"|| F_name != "pdf")
                         {
                             Console.WriteLine("Element don't have a pdf in thair name");
                             continue;
                             
                         }
+                        */
+
+                        if(F_name.Contains("PDF") || F_name.Contains("pdf"))
+                        {
+                            if (!doUpdate)
+                            {
+                                try
+                                {
+                                    var query  = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
+                                    var result = await _db.ExecuteAsync(query);
+                                    continue;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Error on Insert : " + ex.Message);
+                                    continue;
+                                }
+
+                            }
+                            else
+                            {
+                                var query = $"SELECT Count(FF_Name) FROM {TableName} WHERE FF_Name = '{F_name}'";
+                                var result = await _db.QueryAsync<int>(query, new { table = TableName, name = F_name });
+
+                                if (result.Single() == 0)
+                                {
+                                    Console.WriteLine("Does not exist");
+                                    query = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
+                                    _ = await _db.ExecuteAsync(query);
+                                    continue;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Does Exist");
+                                    query = $"UPDATE {TableName} SET FF_Name = '{F_name}', Location_path = '{path}', FK_Father = '{FK}' WHERE Location_path = '{path}'";
+                                    _ = await _db.ExecuteAsync(query);
+                                    continue;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Element don't have a pdf in thair name");
+
+                            continue;
+                        }
+
+
                     }
                     if (TableName == "client" || TableName == "Client")
                     {
@@ -74,9 +122,16 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     string sql;
                     if (!doUpdate)
                     {
-                        sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
-                        var result = await _db.ExecuteAsync(sql);
-
+                        try
+                        {
+                            sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
+                            var result = await _db.ExecuteAsync(sql);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error on Insert : " + ex.Message);
+                            continue;
+                        }
 
                     }
                     else
@@ -84,15 +139,20 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                         sql = $"SELECT Count(FF_Name) FROM {TableName} WHERE FF_Name = '{F_name}'";
                         var result = await _db.QueryAsync<int>(sql, new { table = TableName, name = F_name });
 
-                        if (result.Contains(0))
+                        if (result.Single() == 0)
                         {
+                            Console.WriteLine("Does not exist");
                             sql = $"INSERT INTO {TableName} VALUES('{F_name}', '{path}', '{FK}')";
                             _ = await _db.ExecuteAsync(sql);
                         }
+                        else
+                        {
+                            Console.WriteLine("Does Exist");
+                            sql = $"UPDATE {TableName} SET FF_Name = '{F_name}', Location_path = '{path}', FK_Father = '{FK}' WHERE Location_path = '{path}'";
+                            _ = await _db.ExecuteAsync(sql);
 
+                        }
                     }
-                    
-                    
                 }
 
                 return true;
@@ -118,8 +178,9 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
             string[] slash_path;
             string F_name;
-            string FK;
+            string Path_PDF_Folder;
             string cleanPath;
+            string sql;
 
 
 
@@ -134,35 +195,41 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     slash_path = path.Trim().Split(@"\");
                     F_name = slash_path.Last();
                     Console.WriteLine(slash_path[^1]);
-                    FK = path.Substring(0, path.LastIndexOf(@"\")).Trim();
+                    Path_PDF_Folder = path.Substring(0, path.LastIndexOf(@"\")).Trim(); //This will help us take the ID of the PDF Folder
 
-                    string sql;
                     if (!doUpdate)
                     {
-                        sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK.Replace(@"\\", @"\")}'";
+                        sql = $"SELECT Id FROM pdf WHERE Location_path = '{Path_PDF_Folder}'";
+                        Console.WriteLine("ID Getting sql = " + sql);
                         var result = await _db.QueryAsync<int>(sql);
+                        var ID_Folder = result.Single();
+                        Console.WriteLine("The Id is : " +ID_Folder);
 
-                        Console.WriteLine(path);
-                        Console.WriteLine(result.Single());
-                        sql = $@"INSERT INTO pdf_file VALUES('{F_name}', '{cleanPath}', '{result.Single()}')";
+                        // After getting the ID we use it to Insert in the PDF_File Table
+                        sql = $@"INSERT INTO pdf_file VALUES('{F_name}', '{path}', {ID_Folder})";
+                        Console.WriteLine("Inserting sql = " + sql);
                         _ = await _db.ExecuteAsync(sql);
 
                     }
                     else
-                    {
+                    {   // Check if it really exist, if we want to update it
                         sql = $"SELECT Count(FF_Name) FROM pdf_file WHERE FF_Name = '{F_name}'";
-                        var resultCount = await _db.QueryAsync(sql);
-                        Console.WriteLine(resultCount.Single()); 
-                        if (resultCount.FirstOrDefault() == "0")
+                        Console.WriteLine("Count result  sql = " + sql);
+                        var resultCount = await _db.QueryAsync<int>(sql);
+                        var File_count = resultCount.Single();
+                        Console.WriteLine($"There is {File_count} files");
+                        
+                        if (File_count > 0)
                         {
-                            sql = $"SELECT Id FROM pdf WHERE Location_path = '{FK.Replace(@"\\", @"\")}'";
-                            var resultID = await _db.QueryAsync<int>(sql);
+                            sql = $"SELECT FK_Father FROM pdf_file WHERE FF_Name = '{F_name}'";
+                            var ID_Father = await _db.QueryAsync<int>(sql);
 
-                            sql = $"INSERT INTO pdf_file VALUES('{F_name}', '{cleanPath}', '{resultID.Single()}')";
-                            var UpdateResult = await _db.ExecuteAsync(sql);
+                            sql = $"INSERT INTO pdf_file VALUES('{F_name}', '{path}', {ID_Father})";
+                            _ = await _db.ExecuteAsync(sql);
                         }
                         else
                         {
+                            Console.WriteLine("Can't update. This file does not exist");
                             return false;
                         }
                     }
