@@ -25,7 +25,7 @@ namespace PortalAPI_Service.Controllers
 
         [HttpGet]
         [Route("/")]
-        public async Task<IActionResult> GetFolders(string @F_path)
+        public async Task<IActionResult> GetFolders(string F_path)
         {
             var slash_path = F_path.Trim().Split(@"\");
             var F_name = slash_path.Last();

@@ -30,6 +30,7 @@
     List<string> SuborderList;
     List<string> PDFList;
     List<string> PDF_files;
+    string encodePath;
     string root_path = @"S:\SPAC\Commesse";
 
 
@@ -40,9 +41,10 @@
         string F_name = "";
         bool isFolder = true;
 
-        ClientsList = Directory.GetDirectories(root_path).ToList();
-        Console.WriteLine(ClientsList.Count());
 
+        encodePath = Uri.EscapeDataString(root_path);
+        ClientsList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/?F_path="+encodePath);
+        //Console.WriteLine("https://localhost:44315/?F_path=" + encodePath);
         string json_User = JsonConvert.SerializeObject(ClientsList);
 
 
@@ -69,7 +71,8 @@
                 }
 
 
-                OrdersList = Directory.GetDirectories(client).ToList();
+                encodePath = Uri.EscapeDataString(client);
+                OrdersList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/?F_path=" + encodePath);
                 json_User = JsonConvert.SerializeObject(OrdersList);
                 Console.WriteLine(json_User);
                 HttpRequestMessage httpRequestMessageOrder = new();
@@ -87,7 +90,8 @@
 
                     foreach (var order in OrdersList)
                     {
-                        SuborderList = Directory.GetDirectories(order).ToList();
+                        encodePath = Uri.EscapeDataString(order);
+                        SuborderList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/?F_path=" + encodePath);
                         json_User = JsonConvert.SerializeObject(SuborderList);
                         HttpRequestMessage httpRequestMessageSub = new();
                         httpRequestMessageSub.Method = new HttpMethod("POST");
@@ -104,7 +108,9 @@
 
                             foreach (var suborder in SuborderList)
                             {
-                                PDFList = Directory.GetDirectories(suborder).ToList();
+                                encodePath = Uri.EscapeDataString(suborder);
+                                PDFList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/?F_path=" + encodePath);
+
                                 json_User = JsonConvert.SerializeObject(PDFList);
                                 HttpRequestMessage httpRequestMessagePDF = new();
                                 httpRequestMessagePDF.Method = new HttpMethod("POST");
@@ -121,19 +127,31 @@
 
                                     foreach (var pdf in PDFList)
                                     {
-                                        PDF_files = Directory.GetDirectories(pdf).ToList();
-                                        json_User = JsonConvert.SerializeObject(PDF_files);
-                                        HttpRequestMessage httpRequestMessagePDF_File = new();
-                                        httpRequestMessagePDF_File.Method = new HttpMethod("POST");
-                                        httpRequestMessagePDF_File.RequestUri = new Uri(@"https://localhost:44315/upFile?doUpdate=true");
-                                        httpRequestMessagePDF_File.Content = new StringContent(json_User);
-                                        httpRequestMessagePDF_File.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-
-                                        response = await httpClient.SendAsync(httpRequestMessagePDF_File);
-
-                                        responseStatusCode = response.StatusCode;
-                                        if (responseStatusCode.ToString() == "OK")
+                                        slash_path = pdf.Trim().Split(@"\");
+                                        F_name = slash_path.Last();
+                                        if (F_name.Contains("PDF") || F_name.Contains("pdf"))
                                         {
+                                            encodePath = Uri.EscapeDataString(pdf);
+                                            PDF_files = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/?F_path=" + encodePath);
+
+                                            json_User = JsonConvert.SerializeObject(PDF_files);
+                                            HttpRequestMessage httpRequestMessagePDF_File = new();
+                                            httpRequestMessagePDF_File.Method = new HttpMethod("POST");
+                                            httpRequestMessagePDF_File.RequestUri = new Uri(@"https://localhost:44315/upFile?doUpdate=true");
+                                            httpRequestMessagePDF_File.Content = new StringContent(json_User);
+                                            httpRequestMessagePDF_File.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                                            response = await httpClient.SendAsync(httpRequestMessagePDF_File);
+
+                                            responseStatusCode = response.StatusCode;
+                                            if (responseStatusCode.ToString() == "OK")
+                                            {
+                                                continue;
+                                            }
+                                        }
+                                        else
+                                        {
+
                                             continue;
                                         }
                                     }
@@ -142,8 +160,9 @@
                         }
                     }
                 }
-
+                Console.WriteLine("\n\n\n\n\n\n\n\n\n\n");
             }
+
         }
 
 

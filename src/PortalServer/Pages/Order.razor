@@ -39,8 +39,8 @@
 
     protected async override Task OnInitializedAsync()
     {
-        //Console.WriteLine("https://localhost:44315/api/Folders/");
-        orders = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>("https://localhost:44315/api/Views/orders/" + CustomProtection.Encode(FK_Father));
+        FK_Father = Uri.EscapeDataString(FK_Father);
+        orders = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/orders?father_name=" + CustomProtection.Encode(FK_Father));
 
     }
 

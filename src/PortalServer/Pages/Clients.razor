@@ -36,7 +36,7 @@
     public string Table_Name { get; set; }
 
     [Parameter]
-    public string FK_Father { get; set; }
+    public string FK_Father { get; set; } = "Commesse";
 
 
     // Public var
@@ -47,8 +47,8 @@
 
     protected async override Task OnInitializedAsync()
     {
-        //Console.WriteLine("https://localhost:44315/api/Folders/");
-        clients = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/client/Commesse");
+        FK_Father = Uri.EscapeDataString(FK_Father);
+        clients = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/client?father_name=Commesse");
 
         #region " Heavy Code"
         /*

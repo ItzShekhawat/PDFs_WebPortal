@@ -27,18 +27,25 @@ namespace PortalAPI_Service.Controllers
         }
 
 
-        [HttpGet("{tablename}/{father_name}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
+        [HttpGet("{tablename}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )
         public async Task<IActionResult> GetSubFolders(string tablename, string father_name)
         {
-
+            
             try
             {
                 if (!_memoryCache.TryGetValue(tablename, out var result))
                 {
-                    result = await _foldersRepo.GetSubFolders(father_name, tablename);
+                    if(tablename == "pdf" || tablename == "PDF")
+                    {
+                        result = await _foldersRepo.GetPDFAsync(father_name);
+                    }
+                    else
+                    { 
+                        result = await _foldersRepo.GetSubFolders(father_name, tablename);
+                    }
 
                     //Set in  cache
-                    _memoryCache.Set(father_name, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
+                    _memoryCache.Set(father_name, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1)));
                 }
 
                 return Ok(result);
@@ -95,9 +102,6 @@ namespace PortalAPI_Service.Controllers
             }
         }
 
-        */
-
-
         [HttpGet]
         [Route("pdf/{suborder}")]
         public async Task<IActionResult> GetPDFAsync(string suborder)
@@ -112,6 +116,9 @@ namespace PortalAPI_Service.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        */
+
+
 
 
         [HttpGet]

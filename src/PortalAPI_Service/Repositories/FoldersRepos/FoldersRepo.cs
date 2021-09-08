@@ -41,10 +41,10 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
         */
         #endregion
 
-        public async Task<IEnumerable<PDFModel>> GetPDFAsync(string Suborder)
+        public async Task<IEnumerable<PDFModel>> GetPDFAsync(string Father_key)
         {
-            var query = @"SELECT * FROM pdf WHERE FK_Father = @suborder";
-            var result = await _db.QueryAsync<PDFModel>(query, new { suborder = Suborder});
+            var query = @$"SELECT TOP 1 * FROM pdf WHERE FK_Father = '{Father_key}' ";
+            var result = await _db.QueryAsync<PDFModel>(query, new { suborder = Father_key});
             return result.ToList();
         }
 

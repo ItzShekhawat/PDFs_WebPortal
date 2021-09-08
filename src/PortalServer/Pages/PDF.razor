@@ -41,9 +41,10 @@
     protected async override Task OnInitializedAsync()
     {
         //Console.WriteLine("https://localhost:44315/api/Folders/");
-        pdf_folders = await httpClient.GetFromJsonAsync<List<PDFModel>>("https://localhost:44315/api/Views/pdf/" + CustomProtection.Encode(FK_Father));
-        foreach (var pdf in pdf_folders)
+        pdf_folders = await httpClient.GetFromJsonAsync<List<PDFModel>>("https://localhost:44315/api/Views/pdf?father_name=" + CustomProtection.Encode(FK_Father));
+        foreach(var pdf in pdf_folders)
         {
+            
             pdf_files = await httpClient.GetFromJsonAsync<List<PDF_FileModel>>("https://localhost:44315/api/Views/pdf_file/" + pdf.Id.ToString() );
 
         }
@@ -62,7 +63,7 @@
 
     private async Task clicked(string file_name, string path)
     {
-        Console.WriteLine(@"https://localhost:44315/api/Folders/pdfShow/path=" + path + "\\,name=" + file_name);
+        //Console.WriteLine(@"https://localhost:44315/api/Folders/pdfShow/path=" + path + "\\,name=" + file_name);
         path = path.Replace(@"\", "%5C").Replace(":", "%3A");
 
         NavigationManager.NavigateTo(@"https://localhost:44315/api/Views/streamPDF/" + path);
