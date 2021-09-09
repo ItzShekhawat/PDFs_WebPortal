@@ -9,16 +9,17 @@ using System.Data;
 using PortalModels;
 using Dapper;
 
-
 namespace PortalAPI_Service.Repositories.DirectoryRepos
 {
     public class DirRepo : IDirRepo
     {
 
         private readonly IDbConnection _db;
+        
         public DirRepo(IConfiguration configuration)
         {
             _db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+            
         }
 
 
@@ -70,10 +71,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     }
                     if(TableName == "pdf")
                     {
-                        if (!F_name.Contains("pdf"))
-                        {
-                            continue;
-                        }else if (!F_name.Contains("PDF"))
+                        if (!F_name.Contains("pdf", StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
@@ -119,7 +117,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
 
                     slash_path = path.Trim().Split(@"\");
-                    F_Name = slash_path.Last();
+                    F_Name = slash_path.Last().Replace("'", "''");
                     if (!F_Name.Contains(".pdf"))
                     { 
                         continue;
@@ -237,6 +235,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
         private async Task UpdateHandlerAsync(string F_Name, string Location, string FKey, bool doUpdate, string TableName, IDbConnection _db)
         {
+            F_Name = F_Name.Replace("'", "''");
             if (doUpdate)
             {
                 ;
@@ -255,7 +254,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     {
                         Console.WriteLine("The folder does not Exist! " + F_Name + "in Table : " + TableName);
 
-                        sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey}')";
+                        sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location.Replace("'", "''")}', '{FKey.Replace("'", "''")}')";
                         _ = await _db.ExecuteAsync(sql_query);
 
                     }

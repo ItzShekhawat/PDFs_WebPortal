@@ -1,12 +1,14 @@
-﻿@page "/views/"
+﻿@page "/views/{PDF_Path}"
+@inject CustomIDataProtection CustomProtection
 
 <AuthorizeView>
     <Authorized>
        
-        <embed src="https://localhost:44315/api/Views/streamPDF/Z%3A%5CSPAC%5CCommesse%5CSIAB%5C305%20Macchina%20Trote%5C305001%5CPDF%5Chello.pdf" style="width: 100%; height:1200px" />
+        <embed src="https://localhost:44315/api/Views/streamPDF/@PDF_Path" style="width: 100%; height:1200px" />
     </Authorized>
     <NotAuthorized>
-             
+        <embed src="https://localhost:44315/api/Views/streamPDF/@PDF_Path" style="width: 100%; height:1200px" />
+
     </NotAuthorized>
 </AuthorizeView>
 
@@ -16,10 +18,16 @@
     [Parameter]
     public string PDF_Path { get; set; }
 
+
+
     [Parameter]
     public string PDF_Name { get; set; }
 
 
+    protected override void OnInitialized()
+    {
+        PDF_Path = CustomProtection.Encode(PDF_Path);
+    }
 
 
 

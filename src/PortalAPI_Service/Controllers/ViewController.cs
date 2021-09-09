@@ -4,6 +4,7 @@ using Microsoft.Net.Http.Headers;
 using PortalAPI_Service.Repositories.FoldersRepos;
 using PortalModels;
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -140,12 +141,12 @@ namespace PortalAPI_Service.Controllers
 
         [HttpGet]
         [Route("streamPDF/{File_path}")]
-        public async Task<IActionResult> ShowPDF(string File_path)
+        public IActionResult ShowPDF(string File_path)
         {
             Console.WriteLine(File_path);
             if (string.IsNullOrEmpty(File_path))
             {
-                return StatusCode(404, File_path);
+                return StatusCode(501, File_path);
             }
             else
             {
@@ -162,13 +163,17 @@ namespace PortalAPI_Service.Controllers
                         //var stream = new FileStream(PDF_INFO.Location_path, FileMode.Open, FileAccess.Read, FileShare.Read);
                         //StreamResult = new(stream, "application/pdf");
 
-                        _memoryCache.Set(File_path, PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
+                        _memoryCache.Set(File_path, PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(0)));
                     }
+                    HttpContext.Response.Headers.Add("Content-Disposition", "inline; filename="+name);
 
                     Console.WriteLine("Stream Done");
+                    //Stream stream = new MemoryStream(PDF_Bytes);
 
-                    return new FileContentResult(PDF_Bytes, "application/pdf");
 
+                    //return new FileStreamResult(stream, "application/pdf") { FileDownloadName = name };
+
+                    return File(PDF_Bytes, "application/pdf");
                 }
                 catch (Exception ex)
                 {

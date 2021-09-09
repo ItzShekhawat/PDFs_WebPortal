@@ -13,14 +13,19 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
     public class FoldersRepo : IFoldersRepo 
     {
         private readonly IDbConnection _db;
+        
+
         public FoldersRepo(IConfiguration configuration)
         {
             _db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+           
         }
 
         public async Task<IEnumerable<GenericFF_Model>> GetSubFolders(string Father_Key, string TableName)
         {
-            var query = $@"SELECT * FROM {TableName} WHERE FK_Father = '{Father_Key}'";
+            Father_Key = Father_Key.Replace("[", "+");
+            //Father_Key = _DataProtection.Encode(Father_Key);
+            var query = $@"SELECT * FROM {TableName} WHERE FK_Father = '{Father_Key.Replace("'", "''")}'";
             //SELECT * FROM client WHERE FK_Father = 'Commesse'
             Console.WriteLine(TableName);
             Console.WriteLine(Father_Key);

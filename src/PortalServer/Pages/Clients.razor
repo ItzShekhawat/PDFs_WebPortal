@@ -6,6 +6,9 @@
 
 
 <h3>Search for It </h3>
+<MudItem xs="12" sm="12" md="12" Style="margin:10px">
+    <MudTextField T="string" @bind-Value="Search" @bind-Value:event="oninput" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark"  />
+</MudItem>
 
 <br />
 <MudTable Items="clients" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
@@ -19,9 +22,7 @@
         <MudTh> <MudIcon Style="font-size: 20px" Icon="@Icons.Rounded.FolderOpen" /> Folder</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTr>
-            <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name)">@context.FF_Name</MudTd>
-        </MudTr>
+            <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name)">@context.FF_Name</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -43,7 +44,9 @@
     public List<GenericFF_Model> clients = new();
     public string InfoMessage { get; set; }
     public string searchString = "";
+    public string Search = "";
 
+  
 
     protected async override Task OnInitializedAsync()
     {
@@ -97,11 +100,7 @@
         NavigationManager.NavigateTo("view/orders/" + CustomProtection.Decode(Father_Name));
     }
 
-    /*
-    private bool FilterDB(string )
-    {
+    
 
-    }
-    */
 
 }
