@@ -39,7 +39,9 @@
 
     protected async override Task OnInitializedAsync()
     {
-        FK_Father = Uri.EscapeDataString(FK_Father);
+        FK_Father = CustomProtection.Encode(FK_Father);
+        FK_Father = FK_Father.Replace("+", "[");
+        FK_Father = CustomProtection.Decode(FK_Father);
         suborders = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/suborder?father_name=" + CustomProtection.Encode(FK_Father));
 
         //Console.WriteLine("https://localhost:44315/api/Folders/");

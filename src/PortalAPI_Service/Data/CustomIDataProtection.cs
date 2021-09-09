@@ -22,6 +22,7 @@ namespace PortalAPI_Service.Data
         }
         public string Encode(string data)
         {
+            Console.WriteLine(data);
             return protector.Unprotect(data);
         }
 

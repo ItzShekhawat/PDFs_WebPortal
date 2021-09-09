@@ -23,9 +23,10 @@ namespace PortalServer.Data
         }
         public string Encode(string data)
         {
+            Console.WriteLine(data + "<--Data ");
             return protector.Unprotect(data);
         }
-
+        /*
         public  string Encryptwords(string Encryptval)
         {
             byte[] SrctArray;
@@ -61,6 +62,7 @@ namespace PortalServer.Data
             objt.Clear();
             return UTF8Encoding.UTF8.GetString(resArray);
         }
+        */
     }
 
     
