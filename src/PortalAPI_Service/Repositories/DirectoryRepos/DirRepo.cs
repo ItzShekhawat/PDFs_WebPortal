@@ -104,7 +104,6 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
             string[] slash_path;
             string F_Name;
-            string Path_PDF_Folder;
             string FK_Father;
             
             string sql;
@@ -126,7 +125,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     else
                     {
                         FK_Father = slash_path[^3]; //This will help us take the ID of the PDF Folder
-                        //Path_PDF_Folder = path.Substring(0, path.LastIndexOf(@"\")).Trim(); 
+                       
 
                         if (F_Name == "20066 (19024) Misura selecta.pdf")
                         {
@@ -243,7 +242,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
 
 
-        private async Task UpdateHandlerAsync(string F_Name, string Location, string FKey, bool doUpdate, string TableName, IDbConnection _db)
+        private async static Task UpdateHandlerAsync(string F_Name, string Location, string FKey, bool doUpdate, string TableName, IDbConnection _db)
         {
             F_Name = F_Name.Replace("'", "''");
 <<<<<<< HEAD
