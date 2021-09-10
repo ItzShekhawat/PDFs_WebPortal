@@ -2,23 +2,17 @@
 
 
 <MudLayout>
-    <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        My Application
-    </MudAppBar>
-    <MudMainContent>
+    <MudAppBar Elevation="1" Style="@($"Background:{Colors.Blue.Darken4};")">
+        <img src="~/Temp_logo.png" alt="# " />
+        <MudText Typo="Typo.h5" Class="ml-0">Portale EPF</MudText>
+
+    </MudAppBar>      
+    <MudMainContent Style="height:100vh; width:100%;">
         @Body
     </MudMainContent>
 </MudLayout>
 
+
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-@code {
-    bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-}

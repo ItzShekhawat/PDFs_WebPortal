@@ -3,45 +3,47 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject HttpClient Http 
 @inject NavigationManager NavigationManager 
-<AuthorizeView>
-    <Authorized>
-        @if (UserDetails.Access_token == true)
-        {
-            NavigationManager.NavigateTo("/Admin");
-        }
-        else
-        {
-            NavigationManager.NavigateTo("/clients");
-        }
-    </Authorized>
-    <NotAuthorized Context="Login">
-        <div style="max-width: 100vw; min-height: 100vh;  text-align:center">
-            <EditForm Model="@model" OnValidSubmit="ValidateUser" style="display:inline-block">
+
+    
+<div id="parentContainer" Class="d-flex align-center justify-center py-2 px-1" style="height:100%; @($"Background:{Colors.Blue.Darken3};")" >
+    <AuthorizeView>
+        <Authorized>
+            @if (UserDetails.Access_token == true)
+            {
+                NavigationManager.NavigateTo("/Admin");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/clients");
+            }
+        </Authorized>
+        <NotAuthorized Context="Login">
+            <EditForm Model="@model" OnValidSubmit="ValidateUser"  style="width : 450px; ">
                 <DataAnnotationsValidator />
                 <MudCard>
                     <MudCardContent>
-                        <MudTextField Label="Username" HelperText="Max. 8 characters"
-                                      @bind-Value="model.Username" For="@(() => model.Username)" />
-                        <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                      @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                        <MudTextField Label="Username" HelperText="Max. 25 characters"
+                                        @bind-Value="model.Username" For="@(() => model.Username)" />
+                        <MudTextField Label="Password" HelperText="Choose a strong password (Min 8 characters)" Class="mt-3"
+                                        @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
                     </MudCardContent>
                     <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"  Class="ml-auto">Login</MudButton>
                     </MudCardActions>
                     <MudAlert Icon="Alert">
                         <span>@LoginMessage</span>
                     </MudAlert>
                 </MudCard>
             </EditForm>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+   
 
 
 @code {
 
     LoginForm model = new();
-    bool success;
     public string LoginMessage { get; set; }
     UsersModel UserDetails;
 
@@ -80,14 +82,7 @@
                 await sessionStorage.SetItemAsStringAsync("Username", model.Username);
                 ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(UserDetails.Full_name, UserDetails.Access_token );
 
-                if(UserDetails.Access_token == true)
-                {
-                    NavigationManager.NavigateTo("/Admin");
-                }
-                else
-                {
-                    Console.WriteLine("Userrrrrrrrrrrr!!!!!!!");
-                }
+                StateHasChanged();
                 
             }
             else
