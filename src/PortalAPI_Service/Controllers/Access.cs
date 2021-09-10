@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using PortalAPI_Service.DbContextConnection;
+﻿using Microsoft.AspNetCore.Mvc;
 using PortalModels;
 using PortalAPI_Service.Repositories.AccessRepos;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Abstractions;
+
 
 namespace PortalAPI_Service.Controllers
 {

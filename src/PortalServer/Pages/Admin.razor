@@ -110,6 +110,7 @@
                             {
                                 encodePath = Uri.EscapeDataString(suborder);
                                 PDFList = await httpClient.GetFromJsonAsync<List<string>>(@"https://localhost:44315/?F_path=" + encodePath);
+                                
 
                                 json_User = JsonConvert.SerializeObject(PDFList);
                                 HttpRequestMessage httpRequestMessagePDF = new();

@@ -12,9 +12,6 @@ namespace PortalAPI_Service.Controllers
     {
         private readonly IFoldersRepo _foldersRepo;
         private readonly IMemoryCache _memoryCache;
- 
-
-
 
         public ViewsController(IFoldersRepo foldersRepo, IMemoryCache memoryCache)
         {
@@ -22,6 +19,7 @@ namespace PortalAPI_Service.Controllers
             _memoryCache = memoryCache;
           
         }
+
 
 
         [HttpGet("{tablename}")] // A Generic Api that can get the sub-Folders of ( Clients, Orders and Sub-Clients )

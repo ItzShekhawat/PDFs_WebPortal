@@ -9,7 +9,7 @@
 
 <MudTable Items="orders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Table Orders</MudText>
+        <MudText Typo="Typo.h6" >Table Orders</MudText>
         <MudSpacer />
         <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>

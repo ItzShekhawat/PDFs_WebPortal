@@ -13,6 +13,8 @@ namespace PortalAPI_Service.Repositories.AccessRepos
     public class LoginRepo : ILoginRepo
     {
         readonly private IDbConnection _db;
+        private DynamicParameters queryParameters;
+
         public LoginRepo(IConfiguration configuration)
         {
             _db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
@@ -20,7 +22,7 @@ namespace PortalAPI_Service.Repositories.AccessRepos
 
         public async Task<UsersModel> CheckUser(string username, string password)
         {
-            string sql = $"SELECT * FROM users WHERE Full_name = '{username}' AND Password = '{password}' ";
+            string sql = $"SELECT * FROM users WHERE Full_name = '" + username.Replace("'", "''") + "' AND Password = '" + password.Replace("'", "''") + "' ";
             Console.WriteLine(sql);
             return await _db.QueryFirstAsync<UsersModel>(sql);
         }

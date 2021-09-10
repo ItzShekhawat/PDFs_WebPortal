@@ -107,6 +107,8 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             string FK_Father;
             
             string sql;
+            
+
 
             try
             {
@@ -118,6 +120,11 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
                     slash_path = path.Trim().Split(@"\");
                     F_Name = slash_path.Last().Replace("'", "''");
+
+                    if (F_Name.Contains("18730_Modifica aspiratore.pdf"))
+                    {
+                        Console.WriteLine("Now on 20000");
+                    }
                     if (!F_Name.Contains(".pdf"))
                     { 
                         continue;
@@ -147,7 +154,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                                     var id_Father = await _db.QueryAsync<int>(sql_query);
 
                                     // After getting the ID we use it to Insert in the PDF_File Table
-                                    sql = $@"INSERT INTO pdf_file VALUES('{F_Name}', '{path}', {id_Father.Single()})";
+                                    sql = $@"INSERT INTO pdf_file VALUES('{F_Name}', '{path.Replace("'", "''")}', {id_Father.Single()})";
                                     Console.WriteLine("Inserting sql = " + sql);
                                     _ = await _db.ExecuteAsync(sql);
 
