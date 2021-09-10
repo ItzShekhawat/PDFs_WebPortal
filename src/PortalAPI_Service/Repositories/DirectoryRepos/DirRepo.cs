@@ -125,14 +125,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     else
                     {
                         FK_Father = slash_path[^3]; //This will help us take the ID of the PDF Folder
-                       
 
-                        if (F_Name == "20066 (19024) Misura selecta.pdf")
-                        {
-                            Console.WriteLine("\n");
-                            Console.WriteLine("Avviamo il controllo");
-
-                        }
 
                         if (doUpdate)
                         {
@@ -245,10 +238,10 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
         private async static Task UpdateHandlerAsync(string F_Name, string Location, string FKey, bool doUpdate, string TableName, IDbConnection _db)
         {
             F_Name = F_Name.Replace("'", "''");
-<<<<<<< HEAD
+
             Location = Location.Replace("'", "''");
-=======
->>>>>>> main
+
+
             if (doUpdate)
             {
                 
@@ -267,11 +260,11 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     {
                         Console.WriteLine("The folder does not Exist! " + F_Name + "in Table : " + TableName);
 
-<<<<<<< HEAD
+
                         sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey.Replace("'", "''")}')";
-=======
+
                         sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location.Replace("'", "''")}', '{FKey.Replace("'", "''")}')";
->>>>>>> main
+
                         _ = await _db.ExecuteAsync(sql_query);
 
                     }
