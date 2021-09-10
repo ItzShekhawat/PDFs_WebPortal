@@ -1,14 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Net.Http.Headers;
 using PortalAPI_Service.Repositories.FoldersRepos;
-using PortalModels;
 using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace PortalAPI_Service.Controllers
 {
@@ -18,13 +12,15 @@ namespace PortalAPI_Service.Controllers
     {
         private readonly IFoldersRepo _foldersRepo;
         private readonly IMemoryCache _memoryCache;
-     
+ 
+
 
 
         public ViewsController(IFoldersRepo foldersRepo, IMemoryCache memoryCache)
         {
             _foldersRepo = foldersRepo;
             _memoryCache = memoryCache;
+          
         }
 
 
@@ -140,10 +136,11 @@ namespace PortalAPI_Service.Controllers
 
 
         [HttpGet]
-        [Route("streamPDF/{File_path}")]
+        [Route("streamPDF/")]
         public IActionResult ShowPDF(string File_path)
         {
             Console.WriteLine(File_path);
+            
             if (string.IsNullOrEmpty(File_path))
             {
                 return StatusCode(501, File_path);
@@ -163,7 +160,7 @@ namespace PortalAPI_Service.Controllers
                         //var stream = new FileStream(PDF_INFO.Location_path, FileMode.Open, FileAccess.Read, FileShare.Read);
                         //StreamResult = new(stream, "application/pdf");
 
-                        _memoryCache.Set(File_path, PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(0)));
+                        _memoryCache.Set(File_path, PDF_Bytes, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2)));
                     }
                     HttpContext.Response.Headers.Add("Content-Disposition", "inline; filename="+name);
 
@@ -171,9 +168,7 @@ namespace PortalAPI_Service.Controllers
                     //Stream stream = new MemoryStream(PDF_Bytes);
 
 
-                    //return new FileStreamResult(stream, "application/pdf") { FileDownloadName = name };
-
-                    return File(PDF_Bytes, "application/pdf");
+                    return new FileContentResult(PDF_Bytes, "application/pdf");
                 }
                 catch (Exception ex)
                 {
@@ -182,7 +177,7 @@ namespace PortalAPI_Service.Controllers
 
             }
         }
-
+       
 
     }
 }

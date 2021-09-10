@@ -64,7 +64,7 @@
     private async Task clicked(string file_name, string path)
     {
         path = Uri.EscapeDataString(path);
-       
+
         /*
             HttpRequestMessage httpRequestMessageOrder = new();
             httpRequestMessageOrder.Method = new HttpMethod("GET");
@@ -74,11 +74,11 @@
             await httpClient.SendAsync(httpRequestMessageOrder);
             */
 
-            //path = path.Replace(@"\", "%5C").Replace(":", "%3A");
-            //path = CustomProtection.Decode(path);
+        //path = path.Replace(@"\", "%5C").Replace(":", "%3A");
+        path = CustomProtection.Decode(path);
 
-        
-        NavigationManager.NavigateTo(@"/views/"+ CustomProtection.Decode(path));
+
+        NavigationManager.NavigateTo(@"https://localhost:44315/api/Views/streamPDF?File_path=" + CustomProtection.Encode(path));
 
 
     }
