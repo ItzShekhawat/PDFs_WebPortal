@@ -105,6 +105,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             string[] slash_path;
             string F_Name;
             string Path_PDF_Folder;
+            string FK_Father;
             
             string sql;
 
@@ -124,7 +125,15 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     }
                     else
                     {
-                        Path_PDF_Folder = path.Substring(0, path.LastIndexOf(@"\")).Trim(); //This will help us take the ID of the PDF Folder
+                        FK_Father = slash_path[^3]; //This will help us take the ID of the PDF Folder
+                        //Path_PDF_Folder = path.Substring(0, path.LastIndexOf(@"\")).Trim(); 
+
+                        if (F_Name == "20066 (19024) Misura selecta.pdf")
+                        {
+                            Console.WriteLine("\n");
+                            Console.WriteLine("Avviamo il controllo");
+
+                        }
 
                         if (doUpdate)
                         {
@@ -139,13 +148,14 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                                 }
                                 else
                                 {
+                                    
                                     Console.WriteLine("The File does not Exist! " + F_Name + "in Table PDF_File");
 
-                                    sql_query = $@"SELECT Id FROM pdf WHERE Location_path = '{Path_PDF_Folder}'";
+                                    sql_query = $@"SELECT Id FROM pdf WHERE FK_Father = '{FK_Father}'";
                                     var id_Father = await _db.QueryAsync<int>(sql_query);
 
                                     // After getting the ID we use it to Insert in the PDF_File Table
-                                    sql = $@"INSERT INTO pdf_file VALUES('{F_Name}', '{path}', {id_Father})";
+                                    sql = $@"INSERT INTO pdf_file VALUES('{F_Name}', '{path}', {id_Father.Single()})";
                                     Console.WriteLine("Inserting sql = " + sql);
                                     _ = await _db.ExecuteAsync(sql);
 
@@ -236,25 +246,26 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
         private async Task UpdateHandlerAsync(string F_Name, string Location, string FKey, bool doUpdate, string TableName, IDbConnection _db)
         {
             F_Name = F_Name.Replace("'", "''");
+            Location = Location.Replace("'", "''");
             if (doUpdate)
             {
-                ;
+                
                 try
                 {
                     // This will check of existing Folder
-                    var sql_query = $"SELECT Count(*) FROM {TableName} WHERE FF_Name = '{F_Name}'";
+                    var sql_query = $"SELECT Count(*) FROM {TableName} WHERE FK_Father = '{FKey.Replace("'", "''")}'";
                     var count_result = await _db.QueryAsync<int>(sql_query);
 
                     if (count_result.Single() > 0)
                     {
-                        Console.WriteLine("The folder Exist! " + F_Name + " in Table : " + TableName);
+                        Console.WriteLine("The folder Exist! " + FKey + " in Table : " + TableName);
 
                     }
                     else
                     {
                         Console.WriteLine("The folder does not Exist! " + F_Name + "in Table : " + TableName);
 
-                        sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location.Replace("'", "''")}', '{FKey.Replace("'", "''")}')";
+                        sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey.Replace("'", "''")}')";
                         _ = await _db.ExecuteAsync(sql_query);
 
                     }
@@ -273,7 +284,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                 {
                     Console.WriteLine("Requested an Insert ! " + F_Name + "in Table : " + TableName);
 
-                    var sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey}')";
+                    var sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey.Replace("'", "''")}')";
                     _ = await _db.ExecuteAsync(sql_query);
 
                 }
