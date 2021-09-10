@@ -8,7 +8,7 @@
 <MudItem xs="12" sm="12" md="12" Style="padding:15px">
     <h3>Search for It </h3>
     <MudTextField T="string" @bind-Value="Search" Label="Search" Variant="Variant.Outlined" minlength="3" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark" />
-    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Disabled="@disable_Status" OnClick="()=>Search_Main(Search)" > Cerca </MudButton>
+    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" OnClick="()=>Search_Main(Search)" > Cerca </MudButton>
 </MudItem>
 
 <br />
@@ -46,7 +46,7 @@
     public string InfoMessage { get; set; }
     public string searchString = "";
     public string Search = "";
-    public bool disable_Status = true;
+   
 
 
 
