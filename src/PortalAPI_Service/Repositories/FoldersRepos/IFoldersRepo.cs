@@ -15,6 +15,7 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
         public Task<IEnumerable<PDFModel>> GetPDFAsync(string Suborder);
         public Task<IEnumerable<PDF_FileModel>> GetPDF_FileAsync(int PDF);
         public Task<IEnumerable<GenericFF_Model>> GetSubFolders(string Father_Key, string TableName);
+        public Task<IEnumerable<GenericFF_Model>> GetSearchList(string Serach);
 
 
     }

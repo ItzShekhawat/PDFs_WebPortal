@@ -5,13 +5,14 @@
 @inject CustomIDataProtection CustomProtection
 
 
-<h3>Search for It </h3>
-<MudItem xs="12" sm="12" md="12" Style="margin:10px">
-    <MudTextField T="string" @bind-Value="Search" @bind-Value:event="oninput" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark"  />
+<MudItem xs="12" sm="12" md="12" Style="padding:15px">
+    <h3>Search for It </h3>
+    <MudTextField T="string" @bind-Value="Search" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark" />
+    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" OnClick="()=>Search_Main(Search)" > Cerca </MudButton>
 </MudItem>
 
 <br />
-<MudTable Items="clients" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
+<MudTable Items="TableModel" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Tabella Clients</MudText>
         <MudSpacer />
@@ -22,7 +23,7 @@
         <MudTh> <MudIcon Style="font-size: 20px" Icon="@Icons.Rounded.FolderOpen" /> Folder</MudTh>
     </HeaderContent>
     <RowTemplate>
-            <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name)">@context.FF_Name</MudTd>
+            <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name, context.FK_Father)">@context.FF_Name</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -41,17 +42,17 @@
 
 
     // Public var
-    public List<GenericFF_Model> clients = new();
+    public List<GenericFF_Model> TableModel = new();
     public string InfoMessage { get; set; }
     public string searchString = "";
     public string Search = "";
 
-  
+
 
     protected async override Task OnInitializedAsync()
     {
         FK_Father = Uri.EscapeDataString(FK_Father);
-        clients = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/client?father_name=Commesse");
+        TableModel = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/client?father_name=Commesse");
 
         #region " Heavy Code"
         /*
@@ -95,12 +96,28 @@
         return false;
     }
 
-    private void clicked(string Father_Name)
+
+
+    private void clicked(string Father_Name, string Father_Key)
     {
-        NavigationManager.NavigateTo("view/orders/" + CustomProtection.Decode(Father_Name));
+        if(Father_Key != "Commesse")
+        {
+            NavigationManager.NavigateTo("view/suborder/" + CustomProtection.Decode(Father_Name));
+        }
+        else
+        {
+            NavigationManager.NavigateTo("view/orders/" + CustomProtection.Decode(Father_Name));
+        }
     }
 
-    
+
+
+    private async Task Search_Main(string Search)
+    {
+        TableModel = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/ordersCheck/"+Search);
+        StateHasChanged();//Refresh the component
+    }
+
 
 
 }

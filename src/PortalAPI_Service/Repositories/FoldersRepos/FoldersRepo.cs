@@ -60,6 +60,14 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
             return result.ToList();
         }
 
+
+        public async Task<IEnumerable<GenericFF_Model>> GetSearchList(string Search)
+        {
+            var query = $"SELECT * FROM orders WHERE FF_Name LIKE ('%{Search}%')";
+            var result = await _db.QueryAsync<GenericFF_Model>(query, new { word = Search });
+            return result.ToList();
+        }
+
         /*
         public async Task<IEnumerable<ClientModel>> GetClientsAsync()
         {

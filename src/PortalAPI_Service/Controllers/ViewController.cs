@@ -30,7 +30,7 @@ namespace PortalAPI_Service.Controllers
             
             try
             {
-                if (!_memoryCache.TryGetValue(tablename, out var result))
+                if (!_memoryCache.TryGetValue(father_name, out var result))
                 {
                     if(tablename == "pdf" || tablename == "PDF")
                     {
@@ -42,7 +42,7 @@ namespace PortalAPI_Service.Controllers
                     }
 
                     //Set in  cache
-                    _memoryCache.Set(father_name, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(1)));
+                    _memoryCache.Set(father_name, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10)));
                 }
 
                 return Ok(result);
@@ -53,6 +53,29 @@ namespace PortalAPI_Service.Controllers
             }
         }
 
+
+
+        [HttpGet("ordersCheck/{Search}")]
+        public async Task<IActionResult> GetSearchValues(string Search)
+        {
+            Search = Search.ToUpper();
+            try
+            {
+                if (!_memoryCache.TryGetValue(Search, out var result))
+                {
+                    result = await _foldersRepo.GetSearchList(Search);
+
+                    //Set in  cache
+                    _memoryCache.Set(Search, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(3)));
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         /*
         [HttpGet]
