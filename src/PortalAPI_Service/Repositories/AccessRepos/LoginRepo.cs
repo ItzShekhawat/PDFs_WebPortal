@@ -44,7 +44,7 @@ namespace PortalAPI_Service.Repositories.AccessRepos
             _ = _db.Execute(sql, new { ID = id });
         }
 
-        private string CalculateSHA256(string str)
+        private static string CalculateSHA256(string str)
         {
             SHA256 sha256 = SHA256Managed.Create();
             byte[] hashValue;

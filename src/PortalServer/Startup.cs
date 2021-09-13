@@ -1,5 +1,4 @@
 using Blazored.SessionStorage;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -14,7 +13,6 @@ using PortalAPI_Service.Repositories.AccessRepos;
 using PortalServer.CacheRepo;
 using PortalServer.Data;
 using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace PortalServer
 {
@@ -63,23 +61,6 @@ namespace PortalServer
             services.AddSingleton<UniqueCode>();
             services.AddSingleton<CustomIDataProtection>();
 
-<<<<<<< Updated upstream
-            //Cookie
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = (Microsoft.AspNetCore.Http.SameSiteMode)SameSiteMode.None;
-            });
-            services.AddAuthentication(
-                CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie();
-
-
-
-
-=======
-            
->>>>>>> Stashed changes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -114,9 +95,6 @@ namespace PortalServer
             // Enable Authentication and Autorization
             app.UseAuthorization();
             app.UseAuthorization();
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
 
 
             app.UseEndpoints(endpoints =>

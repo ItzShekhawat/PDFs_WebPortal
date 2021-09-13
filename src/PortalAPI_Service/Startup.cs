@@ -65,7 +65,7 @@ namespace PortalAPI_Service
 
             // Enable Authentication and Autorization
             app.UseAuthorization();
-            app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

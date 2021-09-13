@@ -27,7 +27,6 @@ namespace PortalAPI_Service.Controllers
         }
 
         [HttpPost]
-        //[Route("{username}/{password}")]
         public async Task<IActionResult> CheckUser([FromBody]LoginForm user)
         {
             Console.WriteLine("Inizio");

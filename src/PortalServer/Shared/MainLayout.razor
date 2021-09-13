@@ -1,11 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-<<<<<<< Updated upstream
 
-
-=======
->>>>>>> Stashed changes
 
 <MudLayout>
     <MudAppBar Elevation="1" Style="@($"Background:{Colors.Blue.Darken4};")">
@@ -13,17 +9,13 @@
         <MudText Typo="Typo.h5" Class="ml-0">Portale EPF</MudText>
         <AuthorizeView>
             <Authorized>
-<<<<<<< Updated upstream
                 <MudButton Class="btn-link btn" OnClick="Logout" Style="color:white; font-size:15px; font-family:Marlett; position:absolute; right:10px">Logout</MudButton>
-=======
-                <MudButton Class="btn-link btn" OnClick="Logout" Style="color:white; font-size:15px; font-family:'UniversalMath1 BT'; position:absolute; right:10px; ">Logout</MudButton>
->>>>>>> Stashed changes
             </Authorized>
         </AuthorizeView>
     </MudAppBar>
     <MudMainContent Style="height:100vh; width:100%;">
         @Body
-       
+
     </MudMainContent>
 </MudLayout>
 
@@ -33,7 +25,6 @@
 <MudSnackbarProvider />
 
 @code{
-<<<<<<< Updated upstream
     private void NavigationNotAuth()
     {
         NavigationManager.NavigateTo("/");
@@ -42,13 +33,12 @@
     {
         NavigationManager.NavigateTo("/clients/");
     }
-=======
->>>>>>> Stashed changes
 
     public async Task Logout()
     {
-        await((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogoutUserFromAuthentication();
+        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogoutUserFromAuthentication();
 
         StateHasChanged();
     }
 }
+
