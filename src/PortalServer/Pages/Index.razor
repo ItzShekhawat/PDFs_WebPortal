@@ -38,7 +38,7 @@
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"  Class="ml-auto">Login</MudButton>
                         </MudCardActions>
-                        <MudAlert Icon="Alert">
+                        <MudAlert Icon="Alert" Style="color:red">
                             <span>@LoginMessage</span>
                         </MudAlert>
                     </MudCard>
@@ -85,16 +85,12 @@
 
             #endregion
 
-
             if (responseStatusCode.ToString() == "OK") // If the user credentials are legit it will be true
             {
                 // DeserializeObj that came in response
                 UserDetails = JsonConvert.DeserializeObject<UsersModel>(responseBody);
-
                 await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAsAuthenticated(UserDetails.Full_name, UserDetails.Access_token );
-
                 StateHasChanged();
-
             }
             else
             {
@@ -102,7 +98,6 @@
                 loading = false;
                 StateHasChanged();
             }
-
 
             return await Task.FromResult(true);
         }
@@ -113,11 +108,8 @@
             return false;
         }
 
-
-
-
-
     }
+
 
 }
 

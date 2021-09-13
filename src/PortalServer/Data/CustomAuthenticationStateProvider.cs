@@ -57,15 +57,17 @@ namespace PortalServer.Data
 
         public async Task SetUserAsAuthenticated(string username, bool role_token)
         {
-            await _sessionStorageService.SetItemAsStringAsync("Username", username);
-
             string role = "";
-            if (role_token) { role = "Admin"; } else { role = "User";  }; 
+            if (role_token) { role = "User"; } else { role = "Admin"; };
+           
+            await _sessionStorageService.SetItemAsStringAsync("Username", username);
+            await _sessionStorageService.SetItemAsStringAsync("Role", role);
+ 
             var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username),new Claim( ClaimTypes.Role, role) }, "Cookies");
 
             var user_cookie = new ClaimsPrincipal(identity);
 
-            // Serializze
+            // Serialize
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user_cookie)));
         }
 
