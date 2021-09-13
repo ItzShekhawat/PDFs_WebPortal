@@ -63,6 +63,7 @@ namespace PortalServer
             services.AddSingleton<UniqueCode>();
             services.AddSingleton<CustomIDataProtection>();
 
+<<<<<<< Updated upstream
             //Cookie
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -76,6 +77,9 @@ namespace PortalServer
 
 
 
+=======
+            
+>>>>>>> Stashed changes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,6 +117,7 @@ namespace PortalServer
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
 
             app.UseEndpoints(endpoints =>
             {

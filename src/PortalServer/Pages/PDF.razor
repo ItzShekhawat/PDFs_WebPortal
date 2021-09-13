@@ -21,12 +21,21 @@
             </ToolBarContent>
             <HeaderContent>
                 <MudTh> <MudIcon Style="font-size: 25px" Icon="@Icons.Filled.FilePresent" /> File</MudTh>
+<<<<<<< Updated upstream
                 <MudTh> <MudIcon Style="font-size: 25px" Icon="@Icons.Filled.FolderOpen" /> Origin</MudTh>
 
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FF_Name</MudTd>
                 <MudTd DataLabel="Father_Name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FK_Father</MudTd>
+=======
+                
+
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name, context.Location_path)">@context.FF_Name</MudTd>
+               
+>>>>>>> Stashed changes
             </RowTemplate>
             <NoRecordsContent>
                 <MudText>No matching records found</MudText>
@@ -39,15 +48,19 @@
     </Authorized>
     <NotAuthorized>
         <MudAlert> Please Login</MudAlert>
+<<<<<<< Updated upstream
         <MudButton OnClick="()=>NavigationManager.NavigateTo(goback)">Back to Login </MudButton>
+=======
+        <MudButton OnClick="() => NavigationManager.NavigateTo(goback)">Back to Login </MudButton>
+>>>>>>> Stashed changes
     </NotAuthorized>
 </AuthorizeView>
 
 
 @code
 {
-    [Parameter]
-    public string FK_Father { get; set; }
+        [Parameter]
+        public string FK_Father { get; set; }
 
     public List<PDF_FileModel> pdf_files = null;
     public List<PDFModel> pdf_folders = null;
@@ -57,12 +70,16 @@
 
     protected async override Task OnInitializedAsync()
     {
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         pdf_folders = await httpClient.GetFromJsonAsync<List<PDFModel>>("https://localhost:44315/api/Views/pdf?father_name=" + CustomProtection.Encode(FK_Father));
-        foreach(var pdf in pdf_folders)
+        foreach (var pdf in pdf_folders)
         {
 
-            pdf_files = await httpClient.GetFromJsonAsync<List<PDF_FileModel>>("https://localhost:44315/api/Views/pdf_file/" + pdf.Id.ToString() );
+            pdf_files = await httpClient.GetFromJsonAsync<List<PDF_FileModel>>("https://localhost:44315/api/Views/pdf_file/" + pdf.Id.ToString());
 
         }
     }
@@ -78,7 +95,7 @@
         return false;
     }
 
-    private async Task clicked(string file_name, string path)
+    private void clicked(string file_name, string path)
     {
         path = Uri.EscapeDataString(path);
         path = CustomProtection.Decode(path);
@@ -90,5 +107,4 @@
     }
 
 
-    //https://localhost:44315/api/Views/streamPDF/S%3A%5CSPAC%5CCommesse%5CDromont%5C19046%20Linea%20In-can%20H2O%20Argentina%20Weber%20%2818026%29%5C18026E01%5Cpdf%5C18026E01.pdf
 }

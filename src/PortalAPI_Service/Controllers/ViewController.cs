@@ -172,7 +172,6 @@ namespace PortalAPI_Service.Controllers
                 string name = slash_path[^1];
                 try
                 {
-                    //Console.WriteLine($"{PDF_INFO.FF_Name}\n{PDF_INFO.Location_path}\n{PDF_INFO.FK_Father}");
 
                     if (!_memoryCache.TryGetValue(File_path, out byte[] PDF_Bytes))
                     {

@@ -34,7 +34,7 @@ namespace PortalServer.Data
 
             if(username != null)
             {
-                if (role_token) { role = "User"; } else { role = "Admin"; };
+                if (role_token) { role = "Admin"; } else { role = "User"; };
 
                 identity = new ClaimsIdentity(new[]
                 {
@@ -57,8 +57,10 @@ namespace PortalServer.Data
 
         public async Task SetUserAsAuthenticated(string username, bool role_token)
         {
-            string role = "";
-            if (role_token) { role = "User"; } else { role = "Admin"; };
+
+            string role;
+            if (role_token) { role = "Admin"; } else { role = "User"; };
+
            
             await _sessionStorageService.SetItemAsStringAsync("Username", username);
             await _sessionStorageService.SetItemAsStringAsync("Role", role);
@@ -80,6 +82,7 @@ namespace PortalServer.Data
             await _sessionStorageService.RemoveItemAsync("Username");
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user_cookie)));
             NavigationManager.NavigateTo("/");
+
 
         }
     }
