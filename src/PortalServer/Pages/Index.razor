@@ -10,34 +10,43 @@
         <Authorized>
             @if (UserDetails.Access_token == true)
             {
-                NavigationManager.NavigateTo("/Admin");
+                NavigationManager.NavigateTo("/Admin/");
             }
             else
             {
-                NavigationManager.NavigateTo("/clients");
+                NavigationManager.NavigateTo("/clients/");
             }
         </Authorized>
         <NotAuthorized Context="Login">
-            <EditForm Model="@model" OnValidSubmit="ValidateUser"  style="width : 450px; ">
-                <DataAnnotationsValidator />
-                <MudCard>
-                    <MudCardContent>
-                        <MudTextField Label="Username" HelperText="Max. 25 characters"
-                                        @bind-Value="model.Username" For="@(() => model.Username)" />
-                        <MudTextField Label="Password" HelperText="Choose a strong password (Min 8 characters)" Class="mt-3"
-                                        @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"  Class="ml-auto">Login</MudButton>
-                    </MudCardActions>
-                    <MudAlert Icon="Alert">
-                        <span>@LoginMessage</span>
-                    </MudAlert>
-                </MudCard>
-            </EditForm>
+            @if(loading)
+            {
+                <div style="position:absolute; top:50vh; width:100%; text-align:center">
+                    <h1 style="color:white">Accesso Portale</h1>
+                    <p style="color:aliceblue" ><i class="fas fa-spin fa-spinner"></i> Controllo Credenziali ...</p>
+                </div>
+            }else{
+                <EditForm Model="@model" OnValidSubmit="ValidateUser"  style="width : 450px; ">
+                    <DataAnnotationsValidator />
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField Label="Username" HelperText="Max. 25 characters"
+                                            @bind-Value="model.Username" For="@(() => model.Username)" />
+                            <MudTextField Label="Password" HelperText="Choose a strong password (Min 8 characters)" Class="mt-3"
+                                            @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"  Class="ml-auto">Login</MudButton>
+                        </MudCardActions>
+                        <MudAlert Icon="Alert">
+                            <span>@LoginMessage</span>
+                        </MudAlert>
+                    </MudCard>
+                </EditForm>
+            }
         </NotAuthorized>
     </AuthorizeView>
 </div>
+
    
 
 
@@ -46,6 +55,7 @@
     LoginForm model = new();
     public string LoginMessage { get; set; }
     UsersModel UserDetails;
+    bool loading = false;
 
 
 
@@ -53,6 +63,7 @@
     {
         try
         {
+            loading = true;
             //Http.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Bearer", access_token);
             //Http.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
 
@@ -80,14 +91,16 @@
                 UserDetails = JsonConvert.DeserializeObject<UsersModel>(responseBody);
 
                 await sessionStorage.SetItemAsStringAsync("Username", model.Username);
-                ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAdAuthenticated(UserDetails.Full_name, UserDetails.Access_token );
+                ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAsAuthenticated(UserDetails.Full_name, UserDetails.Access_token );
 
                 StateHasChanged();
-                
+
             }
             else
             {
                 LoginMessage = "Invalid username or password";
+                loading = false;
+                StateHasChanged();
             }
 
 
@@ -97,7 +110,7 @@
         {
 
             Console.WriteLine(ex.Message);
-            return false; 
+            return false;
         }
 
 

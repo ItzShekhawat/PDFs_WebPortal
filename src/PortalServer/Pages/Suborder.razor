@@ -8,6 +8,10 @@
 
 
 <MudTable Items="suborders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
+    <ColGroup>
+        <col style="width: 80%;" />
+        <col />
+    </ColGroup>
     <ToolBarContent>
         <MudText Typo="Typo.h6">Table Suborder</MudText>
         <MudSpacer />
@@ -15,10 +19,13 @@
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Folder Name</MudTh>
+        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Folder</MudTh>
+        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Origin</MudTh>
+
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name)">@context.FF_Name</MudTd>
+        <MudTd DataLabel="Father_Name" @onclick="()=>clicked(context.FF_Name)">@context.FK_Father</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -40,7 +47,7 @@
     protected async override Task OnInitializedAsync()
     {
         FK_Father = CustomProtection.Encode(FK_Father);
-        FK_Father = FK_Father.Replace("+", "[");
+        FK_Father = FK_Father.Replace("+", "[").Replace("'", "]");
         FK_Father = CustomProtection.Decode(FK_Father);
         suborders = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/suborder?father_name=" + CustomProtection.Encode(FK_Father));
 

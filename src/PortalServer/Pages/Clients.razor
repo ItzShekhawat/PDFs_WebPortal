@@ -5,13 +5,13 @@
 @inject CustomIDataProtection CustomProtection
 
 
-<MudItem xs="12" sm="12" md="12" Style="padding:15px">
-    <h3>Search for It </h3>
-    <MudTextField T="string" @bind-Value="Search" Label="Search" Variant="Variant.Outlined" minlength="3" Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark" />
-    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" OnClick="()=>Search_Main(Search)" > Cerca </MudButton>
+<MudItem xs="10" sm="10" md="10" Style="padding:10px">
+    <MudTextField T="string" @bind-Value="Search" Immediate="true" @onkeypress="Enter" Label="Ricerca per commessa o descrizione" Variant="Variant.Outlined" minlength="3" Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark" />
 </MudItem>
 
 <br />
+<br />
+
 <MudTable Items="TableModel" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Tabella Clients</MudText>
@@ -23,7 +23,7 @@
         <MudTh> <MudIcon Style="font-size: 20px" Icon="@Icons.Rounded.FolderOpen" /> Folder</MudTh>
     </HeaderContent>
     <RowTemplate>
-            <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name, context.FK_Father)">@context.FF_Name</MudTd>
+        <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name, context.FK_Father)">@context.FF_Name</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -46,7 +46,7 @@
     public string InfoMessage { get; set; }
     public string searchString = "";
     public string Search = "";
-   
+
 
 
 
@@ -101,7 +101,7 @@
 
     private void clicked(string Father_Name, string Father_Key)
     {
-        if(Father_Key != "Commesse")
+        if (Father_Key != "Commesse")
         {
             NavigationManager.NavigateTo("view/suborder/" + CustomProtection.Decode(Father_Name));
         }
@@ -115,9 +115,9 @@
 
     private async Task Search_Main(string Search)
     {
-        if(Search.Count() > 0)
+        if (Search.Count() > 0)
         {
-            TableModel = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/ordersCheck/"+Search);
+            TableModel = await httpClient.GetFromJsonAsync<List<GenericFF_Model>>(@"https://localhost:44315/api/Views/ordersCheck/" + Search);
             StateHasChanged();//Refresh the component
         }
         else
@@ -126,6 +126,13 @@
         }
     }
 
+    public async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            await Search_Main(Search);
+        }
+    }
 
 
 }

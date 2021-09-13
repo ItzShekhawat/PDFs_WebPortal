@@ -26,7 +26,6 @@ namespace PortalAPI_Service.Controllers
             return result == null ? NotFound() : Ok(result);
         }
 
-
         [HttpPost]
         //[Route("{username}/{password}")]
         public async Task<IActionResult> CheckUser([FromBody]LoginForm user)

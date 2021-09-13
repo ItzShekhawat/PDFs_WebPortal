@@ -121,10 +121,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                     slash_path = path.Trim().Split(@"\");
                     F_Name = slash_path.Last().Replace("'", "''");
 
-                    if (F_Name.Contains("18730_Modifica aspiratore.pdf"))
-                    {
-                        Console.WriteLine("Now on 20000");
-                    }
+                
                     if (!F_Name.Contains(".pdf"))
                     { 
                         continue;

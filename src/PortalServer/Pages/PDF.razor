@@ -7,6 +7,10 @@
 
 
 <MudTable Items="pdf_files" Hover="true" Bordered="true" Filter="new Func<PDF_FileModel, bool>(FilterFunc)">
+    <ColGroup>
+        <col style="width: 80%;" />
+        <col />
+    </ColGroup>
     <ToolBarContent>
         <MudText Typo="Typo.h6">PDF Files</MudText>
         <MudSpacer />
@@ -14,11 +18,13 @@
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> File name</MudTh>
+        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> File</MudTh>
+        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Origin</MudTh>
 
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FF_Name</MudTd>
+        <MudTd DataLabel="Father_Name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FK_Father</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>

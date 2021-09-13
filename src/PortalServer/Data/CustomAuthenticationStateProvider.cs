@@ -22,13 +22,17 @@ namespace PortalServer.Data
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var username = await _sessionStorageService.GetItemAsync<string>("Username");
+            var role_token = await _sessionStorageService.GetItemAsync<bool>("Role");
+            string role;
             ClaimsIdentity identity; 
 
             if(username != null)
-            { 
+            {
+                if (role_token) { role = "User"; } else { role = "Admin"; };
+
                 identity = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, username ),
+                    new Claim(ClaimTypes.Name, username, ClaimTypes.Role, role),
                 }, "apiauth_type");
 
             }
@@ -44,7 +48,7 @@ namespace PortalServer.Data
         }
 
 
-        public void SetUserAdAuthenticated(string username, bool role_token)
+        public void SetUserAsAuthenticated(string username, bool role_token)
         {
             string role = "";
             if (role_token) { role = "User"; } else { role = "Admin";  }; 
