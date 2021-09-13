@@ -7,13 +7,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PortalAPI_Service.Repositories.AccessRepos
 {
     public class LoginRepo : ILoginRepo
     {
         readonly private IDbConnection _db;
-        private DynamicParameters queryParameters;
+        byte[] pass;
 
         public LoginRepo(IConfiguration configuration)
         {
@@ -22,7 +24,8 @@ namespace PortalAPI_Service.Repositories.AccessRepos
 
         public async Task<UsersModel> CheckUser(string username, string password)
         {
-            string sql = $"SELECT * FROM users WHERE Full_name = '" + username.Replace("'", "''") + "' AND Password = '" + password.Replace("'", "''") + "' ";
+            password = CalculateSHA256(password);
+            string sql = $"SELECT * FROM users WHERE Full_name = '" + username.Replace("'", "''") + "' AND Password = '" + password + "' ";
             Console.WriteLine(sql);
             return await _db.QueryFirstAsync<UsersModel>(sql);
         }
@@ -41,5 +44,21 @@ namespace PortalAPI_Service.Repositories.AccessRepos
             _ = _db.Execute(sql, new { ID = id });
         }
 
+        private string CalculateSHA256(string str)
+        {
+            SHA256 sha256 = SHA256Managed.Create();
+            byte[] hashValue;
+            UTF8Encoding objUtf8 = new UTF8Encoding();
+            hashValue = sha256.ComputeHash(objUtf8.GetBytes(str));
+
+            // Convert byte array to a string   
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < hashValue.Length; i++)
+            {
+                builder.Append(hashValue[i].ToString("x2"));
+            }
+            return builder.ToString();
+
+        }
     }
 }

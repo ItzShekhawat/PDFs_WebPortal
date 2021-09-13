@@ -1,6 +1,9 @@
 ﻿
 using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +12,16 @@ using System.Threading.Tasks;
 
 namespace PortalServer.Data
 {
-    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
+    public class CustomAuthenticationStateProvider : AuthenticationStateProvider 
     {
         private readonly ISessionStorageService _sessionStorageService;
 
-        public CustomAuthenticationStateProvider(ISessionStorageService sessionStorageService)
+        public NavigationManager NavigationManager { get; }
+
+        public CustomAuthenticationStateProvider(ISessionStorageService sessionStorageService, NavigationManager navigationManager)
         {
             _sessionStorageService = sessionStorageService;
+            NavigationManager = navigationManager;
         }
 
 
@@ -32,7 +38,8 @@ namespace PortalServer.Data
 
                 identity = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, username, ClaimTypes.Role, role),
+                    new Claim(ClaimTypes.Name, username),
+                    new Claim(ClaimTypes.Role, role),
                 }, "apiauth_type");
 
             }
@@ -48,15 +55,30 @@ namespace PortalServer.Data
         }
 
 
-        public void SetUserAsAuthenticated(string username, bool role_token)
+        public async Task SetUserAsAuthenticated(string username, bool role_token)
         {
+            await _sessionStorageService.SetItemAsStringAsync("Username", username);
+
             string role = "";
-            if (role_token) { role = "User"; } else { role = "Admin";  }; 
-            var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username, ClaimTypes.Role, role) }, "apiauth_type");
+            if (role_token) { role = "Admin"; } else { role = "User";  }; 
+            var identity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username),new Claim( ClaimTypes.Role, role) }, "Cookies");
 
-            var user = new ClaimsPrincipal(identity);
+            var user_cookie = new ClaimsPrincipal(identity);
 
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+            // Serializze
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user_cookie)));
+        }
+
+
+        public async Task LogoutUserFromAuthentication()
+        {
+            var identity = new ClaimsIdentity();
+            var user_cookie = new ClaimsPrincipal(identity);
+
+            await _sessionStorageService.RemoveItemAsync("Username");
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user_cookie)));
+            NavigationManager.NavigateTo("/");
+
         }
     }
 }

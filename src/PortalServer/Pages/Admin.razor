@@ -6,7 +6,6 @@
 
 <AuthorizeView>
     <Authorized>
-        @context.User.IsInRole("")
         @if (context.User.IsInRole("Admin"))
         {
             <MudButton Disabled="@_processing" OnClick="ProcessSomething" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Info" FullWidth="false">

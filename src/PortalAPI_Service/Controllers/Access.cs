@@ -36,7 +36,6 @@ namespace PortalAPI_Service.Controllers
                 if (!ModelState.IsValid) { return BadRequest(); }
 
                 var result = await _loginRepo.CheckUser(user.Username, user.Password);
-                Console.WriteLine("Passed");
                 return result == null ? NotFound() : (IActionResult)Ok(result);
 
             }

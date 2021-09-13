@@ -5,33 +5,41 @@
 @inject CustomIDataProtection CustomProtection
 
 
-<MudItem xs="10" sm="10" md="10" Style="padding:10px">
-    <MudTextField T="string" @bind-Value="Search" Immediate="true" @onkeypress="Enter" Label="Ricerca per commessa o descrizione" Variant="Variant.Outlined" minlength="3" Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark" />
-</MudItem>
+<AuthorizeView>
+    <Authorized Context="user_context">
+        <MudItem xs="12" sm="12" md="12" Style="padding:10px">
+            <MudTextField T="string" @bind-Value="Search" Immediate="true" @onkeypress="Enter" Label="Ricerca per commessa o descrizione" Variant="Variant.Outlined" minlength="3" Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark" />
+        </MudItem>
 
-<br />
-<br />
+        <br />
+        <br />
 
-<MudTable Items="TableModel" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Tabella Clients</MudText>
-        <MudSpacer />
-        <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh> <MudIcon Style="font-size: 20px" Icon="@Icons.Rounded.FolderOpen" /> Folder</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name, context.FK_Father)">@context.FF_Name</MudTd>
-    </RowTemplate>
-    <NoRecordsContent>
-        <MudText>No matching records found</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>Loading...</MudText>
-    </LoadingContent>
-</MudTable>
+        <MudTable Items="TableModel" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Tabella Clients</MudText>
+                <MudSpacer />
+                <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh> <MudIcon Style="font-size: 20px" Icon="@Icons.Rounded.FolderOpen" /> Folder</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Folder_name" @onclick="() => clicked(context.FF_Name, context.FK_Father)">@context.FF_Name</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+        </MudTable>
+    </Authorized>
+    <NotAuthorized>
+        <MudAlert> Please Login</MudAlert>
+        <MudButton OnClick="()=>NavigationManager.NavigateTo(goback)">Back to Login </MudButton>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [Parameter]
@@ -46,6 +54,7 @@
     public string InfoMessage { get; set; }
     public string searchString = "";
     public string Search = "";
+    string goback = "/";
 
 
 

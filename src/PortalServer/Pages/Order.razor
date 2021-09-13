@@ -7,32 +7,41 @@
 
 
 
-<MudTable Items="orders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
-    <ColGroup>
-        <col style="width: 90%;" />
-        <col />
-    </ColGroup>
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Table Orders</MudText>
-        <MudSpacer />
-        <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Folder</MudTh>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Origin</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name)">@context.FF_Name</MudTd>
-        <MudTd DataLabel="Father_Name" @onclick="()=>clicked(context.FF_Name)">@context.FK_Father</MudTd>
-    </RowTemplate>
-    <NoRecordsContent>
-        <MudText>No matching records found</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>Loading...</MudText>
-    </LoadingContent>
-</MudTable>
+<AuthorizeView>
+    <Authorized Context="user_context">
+        <MudTable Items="orders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
+            <ColGroup>
+                <col style="width: 90%;" />
+                <col />
+            </ColGroup>
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Table Orders</MudText>
+                <MudSpacer />
+                <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Folder</MudTh>
+                <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Origin</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name)">@context.FF_Name</MudTd>
+                <MudTd DataLabel="Father_Name" @onclick="()=>clicked(context.FF_Name)">@context.FK_Father</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+        </MudTable>
+
+    </Authorized>
+    <NotAuthorized>
+        <MudAlert> Please Login</MudAlert>
+        <MudButton OnClick="()=>NavigationManager.NavigateTo(goback)">Back to Login </MudButton>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code
 {
@@ -41,6 +50,7 @@
 
     public List<GenericFF_Model> orders = null;
     public string searchString = "";
+    string goback = "/";
 
 
     protected async override Task OnInitializedAsync()

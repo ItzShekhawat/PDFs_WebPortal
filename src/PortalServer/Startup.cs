@@ -1,4 +1,5 @@
- using Blazored.SessionStorage;
+using Blazored.SessionStorage;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +14,7 @@ using PortalAPI_Service.Repositories.AccessRepos;
 using PortalServer.CacheRepo;
 using PortalServer.Data;
 using System.Net.Http;
-
+using System.Threading.Tasks;
 
 namespace PortalServer
 {
@@ -43,7 +44,7 @@ namespace PortalServer
 
             // Linking the Default AutehticationStateProvider with  the custom one
             services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-
+            
             // Css Framework
             services.AddMudServices();
 
@@ -61,6 +62,19 @@ namespace PortalServer
             // Data Protection
             services.AddSingleton<UniqueCode>();
             services.AddSingleton<CustomIDataProtection>();
+
+            //Cookie
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = (Microsoft.AspNetCore.Http.SameSiteMode)SameSiteMode.None;
+            });
+            services.AddAuthentication(
+                CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie();
+
+
+
 
         }
 
@@ -96,6 +110,9 @@ namespace PortalServer
             // Enable Authentication and Autorization
             app.UseAuthorization();
             app.UseAuthorization();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
 
             app.UseEndpoints(endpoints =>
             {

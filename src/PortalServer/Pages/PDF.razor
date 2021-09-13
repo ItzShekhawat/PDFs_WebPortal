@@ -6,33 +6,43 @@
 @inject CustomIDataProtection CustomProtection
 
 
-<MudTable Items="pdf_files" Hover="true" Bordered="true" Filter="new Func<PDF_FileModel, bool>(FilterFunc)">
-    <ColGroup>
-        <col style="width: 80%;" />
-        <col />
-    </ColGroup>
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">PDF Files</MudText>
-        <MudSpacer />
-        <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> File</MudTh>
-        <MudTh> <MudIcon Style="font-size: 30px" Icon="@Icons.Filled.Folder" /> Origin</MudTh>
+<AuthorizeView>
+    <Authorized Context="user_context">
+        <MudTable Items="pdf_files" Hover="true" Bordered="true" Filter="new Func<PDF_FileModel, bool>(FilterFunc)">
+            <ColGroup>
+                <col style="width: 80%;" />
+                <col />
+            </ColGroup>
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">PDF Files</MudText>
+                <MudSpacer />
+                <MudTextField T="string" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh> <MudIcon Style="font-size: 25px" Icon="@Icons.Filled.FilePresent" /> File</MudTh>
+                <MudTh> <MudIcon Style="font-size: 25px" Icon="@Icons.Filled.FolderOpen" /> Origin</MudTh>
 
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FF_Name</MudTd>
-        <MudTd DataLabel="Father_Name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FK_Father</MudTd>
-    </RowTemplate>
-    <NoRecordsContent>
-        <MudText>No matching records found</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>Loading...</MudText>
-    </LoadingContent>
-</MudTable>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Folder_name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FF_Name</MudTd>
+                <MudTd DataLabel="Father_Name" @onclick="()=>clicked(context.FF_Name, context.Location_path)">@context.FK_Father</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+        </MudTable>
+
+    </Authorized>
+    <NotAuthorized>
+        <MudAlert> Please Login</MudAlert>
+        <MudButton OnClick="()=>NavigationManager.NavigateTo(goback)">Back to Login </MudButton>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 @code
 {
@@ -42,11 +52,12 @@
     public List<PDF_FileModel> pdf_files = null;
     public List<PDFModel> pdf_folders = null;
     public string searchString = "";
+    string goback = "/";
 
 
     protected async override Task OnInitializedAsync()
     {
-        //Console.WriteLine("https://localhost:44315/api/Folders/");
+        
         pdf_folders = await httpClient.GetFromJsonAsync<List<PDFModel>>("https://localhost:44315/api/Views/pdf?father_name=" + CustomProtection.Encode(FK_Father));
         foreach(var pdf in pdf_folders)
         {
@@ -70,17 +81,6 @@
     private async Task clicked(string file_name, string path)
     {
         path = Uri.EscapeDataString(path);
-
-        /*
-            HttpRequestMessage httpRequestMessageOrder = new();
-            httpRequestMessageOrder.Method = new HttpMethod("GET");
-            httpRequestMessageOrder.RequestUri = new Uri(@"https://localhost:44315/api/Views/streamPDF/" + path);
-        
-
-            await httpClient.SendAsync(httpRequestMessageOrder);
-            */
-
-        //path = path.Replace(@"\", "%5C").Replace(":", "%3A");
         path = CustomProtection.Decode(path);
 
 
