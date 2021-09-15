@@ -23,11 +23,13 @@ namespace PortalAPI_Service.Repositories.FoldersRepos
 
         public async Task<IEnumerable<GenericFF_Model>> GetSubFolders(string Father_Key, string TableName)
         {
+            
             Father_Key = Father_Key.Replace("[", "+").Replace("]","''");
             //Father_Key = _DataProtection.Encode(Father_Key);
             var query = $@"SELECT * FROM {TableName} WHERE FK_Father = '{Father_Key}'";
+           
             //SELECT * FROM client WHERE FK_Father = 'Commesse'
-            Console.WriteLine(TableName);
+            Console.WriteLine(query);
             Console.WriteLine(Father_Key);
             var result = await _db.QueryAsync<GenericFF_Model>(query);
             return result.ToList();

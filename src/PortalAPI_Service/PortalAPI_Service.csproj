@@ -27,8 +27,4 @@
     <ProjectReference Include="..\PortalModels\PortalModels.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Help_Function\" />
-  </ItemGroup>
-
 </Project>

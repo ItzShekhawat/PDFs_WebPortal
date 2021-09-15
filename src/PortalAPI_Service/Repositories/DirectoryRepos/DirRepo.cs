@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Security.Permissions;
 using System.Security;
-using System.Runtime.ConstrainedExecution;
 
 namespace PortalAPI_Service.Repositories.DirectoryRepos
 {
@@ -42,10 +41,6 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
         int dwLogonType, int dwLogonProvider, out SafeAccessTokenHandle phToken);
 
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public extern static bool CloseHandle(IntPtr handle);
-
-
         [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public async Task<IEnumerable<string>> GetTheSubFolder_File(string root_path, bool File_or_Folder )
         {
@@ -59,6 +54,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                 LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT,
                 out safeAccessTokenHandle);
 
+            // Check if the user Impersonated Exist 
             if (false == returnValue)
             {
                 int ret = Marshal.GetLastWin32Error();
@@ -68,25 +64,26 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
             using (safeAccessTokenHandle)
             {
-                Console.WriteLine("Did LogonUser Succeed? " + (returnValue ? "Yes" : "No"));
-                Console.WriteLine("Value of Windows NT token: " + safeAccessTokenHandle);
-#pragma warning disable CA1416 // Validate platform compatibility
+                //Console.WriteLine("Did LogonUser Succeed? " + (returnValue ? "Yes" : "No"));
+                //Console.WriteLine("Value of Windows NT token: " + safeAccessTokenHandle);
+                #pragma warning disable CA1416 // Validate platform compatibility
 
                 // Check the identity.
-                Console.WriteLine("Before impersonation: "
-                    + WindowsIdentity.GetCurrent().Name);
+                //Console.WriteLine("Before impersonation: " + WindowsIdentity.GetCurrent().Name);
+
                 // Use the token handle returned by LogonUser.
                 WindowsIdentity.RunImpersonated(safeAccessTokenHandle, () => {
                     var impersonatedUser = WindowsIdentity.GetCurrent().Name;
-                    //--- Call your Method here…….  
+
+                    //IF true it get's me the list of dir else it get's me the files list  
                     ResultList =  File_or_Folder ? Directory.GetDirectories(root_path).ToList() : Directory.GetFiles(root_path).ToList();
                 });
-                // Releasing the context object stops the impersonation
+                
                 // Check the identity.
-                Console.WriteLine("After closing the context: " + WindowsIdentity.GetCurrent().Name);
+                //Console.WriteLine("After closing the context: " + WindowsIdentity.GetCurrent().Name);
+                #pragma warning disable CA1416 // Validate platform compatibility
             }
 
-#pragma warning disable CA1416 // Validate platform compatibility
             return ResultList;
 
 
@@ -106,6 +103,11 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             {
                 foreach (var path in DirList)
                 {
+                    if (path.Contains("20053"))
+                    {
+                        Console.WriteLine("Find it");
+                    }
+
                     slash_path = path.Trim().Split(@"\");
                     F_name = slash_path.Last();
                     FK = slash_path[^2];
@@ -305,6 +307,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             F_Name = F_Name.Replace("'", "''");
 
             Location = Location.Replace("'", "''");
+            string sql_query;
 
 
             if (doUpdate)
@@ -313,7 +316,17 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                 try
                 {
                     // This will check of existing Folder
-                    var sql_query = $"SELECT Count(*) FROM {TableName} WHERE FK_Father = '{FKey.Replace("'", "''")}'";
+                    
+
+                    if(TableName == "pdf") {
+                        sql_query = $"SELECT Count(*) FROM {TableName} WHERE FK_Father = '{FKey.Replace("'", "''")}'"; 
+                    }
+                    else
+                    {
+                        sql_query = $"SELECT Count(*) FROM {TableName} WHERE FF_Name = '{F_Name}'";
+                    }
+
+
                     var count_result = await _db.QueryAsync<int>(sql_query);
 
                     if (count_result.Single() > 0)
@@ -328,7 +341,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
                         sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey.Replace("'", "''")}')";
 
-                        sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location.Replace("'", "''")}', '{FKey.Replace("'", "''")}')";
+                        
 
                         _ = await _db.ExecuteAsync(sql_query);
 
@@ -348,7 +361,7 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
                 {
                     Console.WriteLine("Requested an Insert ! " + F_Name + "in Table : " + TableName);
 
-                    var sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey.Replace("'", "''")}')";
+                    sql_query = $"INSERT INTO {TableName} VALUES('{F_Name}', '{Location}', '{FKey.Replace("'", "''")}')";
                     _ = await _db.ExecuteAsync(sql_query);
 
                 }
