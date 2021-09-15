@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,7 +18,10 @@ using PortalAPI_Service.Repositories.FoldersRepos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Security.Principal;
+using System.Text;
+
 
 namespace PortalAPI_Service
 {
@@ -38,7 +43,16 @@ namespace PortalAPI_Service
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PortalAPI_Service", Version = "v1" });
             });
-
+            /*
+            services.AddHttpClient("somename", c =>
+            {
+                c.BaseAddress = new Uri(Configuration.GetValue<string>("baseURL"));
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+            {
+                UseDefaultCredentials = true
+            });
+            */
             // Linking the Class and the Interface
             services.AddScoped<ILoginRepo, LoginRepo>();
             services.AddScoped<IFoldersRepo, FoldersRepo>();
@@ -46,6 +60,8 @@ namespace PortalAPI_Service
 
             services.AddMemoryCache();
 
+            //Servizi di Autenticazione
+            //services.AddAuthentication(IISDefaults.AuthenticationScheme);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,7 +88,39 @@ namespace PortalAPI_Service
                 endpoints.MapControllers();
             });
 
-          
+            /*
+            app.Run(async (context) =>
+            {
+                try
+                {
+                    var user = (WindowsIdentity)context.User.Identity;
+
+                    #pragma warning disable CA1416 // Validate platform compatibility
+                    await context.Response
+                        .WriteAsync($"User: {user.Name}\tState: {user.ImpersonationLevel}\n");
+
+                    WindowsIdentity.RunImpersonated(user.AccessToken, () =>
+                    {
+                        var impersonatedUser = WindowsIdentity.GetCurrent();
+                        var message =
+                            $"User: {impersonatedUser.Name}\t" +
+                            $"State: {impersonatedUser.ImpersonationLevel}";
+                        Console.WriteLine("This is the message : \n" + message + "\n");
+
+                        var bytes = Encoding.UTF8.GetBytes(message);
+                        context.Response.Body.Write(bytes, 0, bytes.Length);
+                    });
+
+                    #pragma warning restore CA1416 // Validate platform compatibility
+
+                }
+                catch (Exception e)
+                {
+                    await context.Response.WriteAsync(e.ToString());
+                }
+            });
+            */
+
 
         }
     }

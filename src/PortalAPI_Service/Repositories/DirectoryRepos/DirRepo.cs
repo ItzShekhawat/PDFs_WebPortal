@@ -6,8 +6,13 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using PortalModels;
 using Dapper;
+using Microsoft.Win32.SafeHandles;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Security.Permissions;
+using System.Security;
+using System.Runtime.ConstrainedExecution;
 
 namespace PortalAPI_Service.Repositories.DirectoryRepos
 {
@@ -15,19 +20,75 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
     {
 
         private readonly IDbConnection _db;
-        
+
+        const int LOGON32_PROVIDER_DEFAULT = 0;
+        //This parameter causes LogonUser to create a primary token.   
+        const int LOGON32_LOGON_INTERACTIVE = 2;
+        private readonly string username;
+        private readonly string domain;
+        private readonly string password;
+
         public DirRepo(IConfiguration configuration)
         {
             _db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-            
+            username = configuration.GetConnectionString("Username");
+            domain = configuration.GetConnectionString("Domain");
+            password = configuration.GetConnectionString("Password");
         }
 
+        // Get The Impersonated User Token 
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool LogonUser(String lpszUsername, String lpszDomain, String lpszPassword,
+        int dwLogonType, int dwLogonProvider, out SafeAccessTokenHandle phToken);
 
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public extern static bool CloseHandle(IntPtr handle);
+
+
+        [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
         public async Task<IEnumerable<string>> GetTheSubFolder_File(string root_path, bool File_or_Folder )
         {
             // The bool will tell the function if he has to search of files or dir 
             Console.WriteLine(root_path);
-            return File_or_Folder ? Directory.GetDirectories(root_path).ToList() : Directory.GetFiles(root_path).ToList();
+            List<string> ResultList = new();
+            
+
+            SafeAccessTokenHandle safeAccessTokenHandle;
+            bool returnValue = LogonUser(username, domain, password,
+                LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT,
+                out safeAccessTokenHandle);
+
+            if (false == returnValue)
+            {
+                int ret = Marshal.GetLastWin32Error();
+                Console.WriteLine("LogonUser failed with error code : {0}", ret);
+                throw new System.ComponentModel.Win32Exception(ret);
+            }
+
+            using (safeAccessTokenHandle)
+            {
+                Console.WriteLine("Did LogonUser Succeed? " + (returnValue ? "Yes" : "No"));
+                Console.WriteLine("Value of Windows NT token: " + safeAccessTokenHandle);
+#pragma warning disable CA1416 // Validate platform compatibility
+
+                // Check the identity.
+                Console.WriteLine("Before impersonation: "
+                    + WindowsIdentity.GetCurrent().Name);
+                // Use the token handle returned by LogonUser.
+                WindowsIdentity.RunImpersonated(safeAccessTokenHandle, () => {
+                    var impersonatedUser = WindowsIdentity.GetCurrent().Name;
+                    //--- Call your Method here…….  
+                    ResultList =  File_or_Folder ? Directory.GetDirectories(root_path).ToList() : Directory.GetFiles(root_path).ToList();
+                });
+                // Releasing the context object stops the impersonation
+                // Check the identity.
+                Console.WriteLine("After closing the context: " + WindowsIdentity.GetCurrent().Name);
+            }
+
+#pragma warning disable CA1416 // Validate platform compatibility
+            return ResultList;
+
 
         }
 
