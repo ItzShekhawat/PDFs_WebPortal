@@ -284,14 +284,10 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
 
 
                 }
-                
-
                 return true;
-
             }
             catch (Exception ex)
             {
-
                 Console.WriteLine($"Some thing went wrong in UploadFile : {ex.Message}");
                 return false;
             }
