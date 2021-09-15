@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Web;
 using Microsoft.Net.Http.Headers;
 using MudBlazor.Services;
 using PortalAPI_Service.DbContextConnection;
@@ -13,6 +14,8 @@ using PortalAPI_Service.Repositories.AccessRepos;
 using PortalServer.CacheRepo;
 using PortalServer.Data;
 using System.Net.Http;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace PortalServer
 {
@@ -61,6 +64,8 @@ namespace PortalServer
             services.AddSingleton<UniqueCode>();
             services.AddSingleton<CustomIDataProtection>();
 
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,8 +98,21 @@ namespace PortalServer
             });
 
             // Enable Authentication and Autorization
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.Use(async (context, next) =>
+            {
+                if (!context.User.Identity?.IsAuthenticated ?? false)
+                {
+                    context.Response.StatusCode = 401;
+                    await context.Response.WriteAsync("Not Authenticated");
+                }
+                else
+                {
+                    await next();
+                }
+            });
+
+            //app.UseAuthorization();
 
 
             app.UseEndpoints(endpoints =>
