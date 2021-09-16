@@ -1,11 +1,18 @@
 ﻿@page "/"
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-@inject HttpClient Http 
-@inject NavigationManager NavigationManager 
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Microsoft.Identity.Web.MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
 
 
-    
+
+
+<!--
+
 <div id="parentContainer" Class="d-flex align-center justify-center py-2 px-1" style="height:100%; @($"Background:{Colors.Blue.Darken3};")" >
     <AuthorizeView>
         <Authorized>
@@ -48,68 +55,95 @@
     </AuthorizeView>
 </div>
 
-   
+ -->
 
+
+<button @onclick="LogUsername">Log username</button>
+
+<p>@_authMessage</p>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    LoginForm model = new();
-    public string LoginMessage { get; set; }
-    UsersModel UserDetails;
-    bool loading = false;
+    private string _authMessage = "";
 
-
-
-    private async Task<bool> ValidateUser()
+    private async Task LogUsername()
     {
-        try
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
         {
-            loading = true;
-            //Http.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Bearer", access_token);
-            //Http.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
-
-            string json_User = JsonConvert.SerializeObject(model);
-
-            #region "API Request and Response" 
-            // Preparing the httpRequestMessage to handle my request
-            HttpRequestMessage httpRequestMessage = new();
-            httpRequestMessage.Method = new HttpMethod("POST");
-            httpRequestMessage.RequestUri = new Uri(@"https://localhost:44315/api/Access/");
-            httpRequestMessage.Content = new StringContent(json_User);
-            httpRequestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-
-            var response = await Http.SendAsync(httpRequestMessage);
-
-            var responseStatusCode = response.StatusCode;
-            var responseBody = await response.Content.ReadAsStringAsync();
-
-            #endregion
-
-            if (responseStatusCode.ToString() == "OK") // If the user credentials are legit it will be true
-            {
-                // DeserializeObj that came in response
-                UserDetails = JsonConvert.DeserializeObject<UsersModel>(responseBody);
-                await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAsAuthenticated(UserDetails.Full_name, UserDetails.Access_token );
-                StateHasChanged();
-            }
-            else
-            {
-                LoginMessage = "Invalid username or password";
-                loading = false;
-                StateHasChanged();
-            }
-
-            return await Task.FromResult(true);
+            _authMessage = $"{user.Identity.Name} is authenticated.";
         }
-        catch (Exception ex)
+        else
         {
-
-            Console.WriteLine(ex.Message);
-            return false;
+            _authMessage = "The user is NOT authenticated.";
         }
-
     }
 
 
+
+
+    /*
+        LoginForm model = new();
+        public string LoginMessage { get; set; }
+        UsersModel UserDetails;
+        bool loading = false;
+
+
+
+        private async Task<bool> ValidateUser()
+        {
+            try
+            {
+                loading = true;
+                //Http.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Bearer", access_token);
+                //Http.DefaultRequestHeaders.Accept.Add(new HttpMediaTypeWithQualityHeaderValue("application/json"));
+
+                string json_User = JsonConvert.SerializeObject(model);
+
+                #region "API Request and Response"
+                // Preparing the httpRequestMessage to handle my request
+                HttpRequestMessage httpRequestMessage = new();
+                httpRequestMessage.Method = new HttpMethod("POST");
+                httpRequestMessage.RequestUri = new Uri(@"https://localhost:44315/api/Access/");
+                httpRequestMessage.Content = new StringContent(json_User);
+                httpRequestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                var response = await Http.SendAsync(httpRequestMessage);
+
+                var responseStatusCode = response.StatusCode;
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                #endregion
+
+                if (responseStatusCode.ToString() == "OK") // If the user credentials are legit it will be true
+                {
+                    // DeserializeObj that came in response
+                    UserDetails = JsonConvert.DeserializeObject<UsersModel>(responseBody);
+                    await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).SetUserAsAuthenticated(UserDetails.Full_name, UserDetails.Access_token );
+                    StateHasChanged();
+                }
+                else
+                {
+                    LoginMessage = "Invalid username or password";
+                    loading = false;
+                    StateHasChanged();
+                }
+
+                return await Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+
+        }
+
+    */
 }
 

@@ -9,7 +9,7 @@
         <MudText Typo="Typo.h5" Class="ml-0">Portale EPF</MudText>
         <AuthorizeView>
             <Authorized>
-                <MudButton Class="btn-link btn" OnClick="Logout" Style="color:white; font-size:15px; font-family:Marlett; position:absolute; right:10px">Logout</MudButton>
+                <MudButton Class="btn-link btn" OnClick="Logout" Style="color:white; font-size:15px; font-family:Marlett; position:absolute; right:10px" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Logout</MudButton>
             </Authorized>
         </AuthorizeView>
     </MudAppBar>
@@ -36,7 +36,7 @@
 
     public async Task Logout()
     {
-        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogoutUserFromAuthentication();
+        //await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogoutUserFromAuthentication();
 
         StateHasChanged();
     }

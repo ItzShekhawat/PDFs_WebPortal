@@ -14,8 +14,11 @@ using PortalAPI_Service.Repositories.AccessRepos;
 using PortalServer.CacheRepo;
 using PortalServer.Data;
 using System.Net.Http;
-using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Identity.Web.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace PortalServer
 {
@@ -64,8 +67,24 @@ namespace PortalServer
             services.AddSingleton<UniqueCode>();
             services.AddSingleton<CustomIDataProtection>();
 
-            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+            // Azure AD Authentication 
+            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd");
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAd");
 
+
+            services.AddRazorPages().AddMvcOptions(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                              .RequireAuthenticatedUser()
+                              .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }).AddMicrosoftIdentityUI();
+
+            services.AddRazorPages();
+            services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
+            
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,6 +118,8 @@ namespace PortalServer
 
             // Enable Authentication and Autorization
             app.UseAuthentication();
+            app.UseAuthorization();
+            /*
             app.Use(async (context, next) =>
             {
                 if (!context.User.Identity?.IsAuthenticated ?? false)
@@ -111,8 +132,11 @@ namespace PortalServer
                     await next();
                 }
             });
+            */
 
-            //app.UseAuthorization();
+
+
+
 
 
             app.UseEndpoints(endpoints =>
