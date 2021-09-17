@@ -3,10 +3,10 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
-@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Microsoft.Identity.Web.MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
+
 
 <!--
 
@@ -53,6 +53,8 @@
 </div>
 
  -->
+
+
 <AuthorizeView>
     <Authorized>
         Hello, @context.User.Identity.Name !
@@ -62,13 +64,7 @@
             Navigation.NavigateTo("/clients/");
            
         }
-        
-
-        
-        foreach (var cla in context.User.Claims.ToList())
-        {
-            
-        }
+        <!--foreach (var cla in context.User.Claims.ToList()){} -->
 
     </Authorized>
 
@@ -82,9 +78,6 @@
 
 
 @code{
-
-  
-
 
 
     /*
