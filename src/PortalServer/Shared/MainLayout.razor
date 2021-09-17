@@ -9,7 +9,8 @@
         <MudText Typo="Typo.h5" Class="ml-0">Portale EPF</MudText>
         <AuthorizeView>
             <Authorized>
-                <MudButton Class="btn-link btn" OnClick="Logout" Style="color:white; font-size:15px; font-family:Marlett; position:absolute; right:10px" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Logout</MudButton>
+                <MudText Style="position:relative; justify-content:end" >Welcome @context.User.Identity.Name ! </MudText>
+                <MudButton Class="btn-link btn" OnClick="Logout" Style="color:white; font-size:15px; font-family:Marlett; position:absolute; right:10px">Logout</MudButton>
             </Authorized>
         </AuthorizeView>
     </MudAppBar>
@@ -25,6 +26,20 @@
 <MudSnackbarProvider />
 
 @code{
+            [CascadingParameter]
+            private Task<AuthenticationState> authState { get; set; }
+
+        private System.Security.Claims.ClaimsPrincipal principal;
+
+        protected async override void OnParametersSet()
+        {
+            if (authState != null)
+            {
+                principal = (await authState).User;
+            }
+        }
+
+       
     private void NavigationNotAuth()
     {
         NavigationManager.NavigateTo("/");
@@ -36,8 +51,17 @@
 
     public async Task Logout()
     {
-        //await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogoutUserFromAuthentication();
 
+        // var callbackUrl = Url.Action(nameof(SignedOut), "Account", values: null, protocol: Request.Scheme);
+        /*
+          return SignOut(
+              new AuthenticationProperties { RedirectUri = callbackUrl },
+              CookieAuthenticationDefaults.AuthenticationScheme,
+              OpenIdConnectDefaults.AuthenticationScheme);
+
+        */
+        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogoutUserFromAuthentication();
+        NavigationManager.NavigateTo("https://localhost:44309/");
         StateHasChanged();
     }
 }

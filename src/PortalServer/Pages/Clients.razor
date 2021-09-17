@@ -5,7 +5,7 @@
 @inject CustomIDataProtection CustomProtection
 
 
-<AuthorizeView>
+<AuthorizeView Roles="User, Admin">
     <Authorized Context="user_context">
         <MudItem xs="12" sm="12" md="12" Style="padding:10px">
             <MudTextField T="string" @bind-Value="Search" Immediate="true" @onkeypress="Enter" Label="Ricerca per commessa o descrizione" Variant="Variant.Outlined" minlength="3" Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Search" AdornmentColor="Color.Dark" />

@@ -57,10 +57,6 @@ namespace PortalServer.Data
 
         public async Task SetUserAsAuthenticated(string username, bool role_token)
         {
-
-            
-
-           
             await _sessionStorageService.SetItemAsStringAsync("Username", username);
 
             string role;

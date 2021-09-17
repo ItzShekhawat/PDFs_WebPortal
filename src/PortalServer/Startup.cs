@@ -19,6 +19,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace PortalServer
 {
@@ -35,12 +38,20 @@ namespace PortalServer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
 
             // Config the DB Connection string 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Unspecified;
+                // Handling SameSite cookie according to https://docs.microsoft.com/en-us/aspnet/core/security/samesite?view=aspnetcore-3.1
+                options.HandleSameSiteCookieCompatibility();
+            });
 
 
             // Linking the Class and the Interface of login Repo
@@ -68,9 +79,20 @@ namespace PortalServer
             services.AddSingleton<CustomIDataProtection>();
 
             // Azure AD Authentication 
-            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd");
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration, "AzureAd");
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
+            // Sign-in users with the Microsoft identity platform
+            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read" })
+                    .AddInMemoryTokenCaches();
+
+            // The following lines code instruct the asp.net core middleware to use the data in the "roles" claim in the Authorize attribute and User.IsInrole()
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
+                // The claim in the Jwt token where App roles are available.
+                options.TokenValidationParameters.RoleClaimType = "roles";
+                options.TokenValidationParameters.NameClaimType = "name";
+            });
 
             services.AddRazorPages().AddMvcOptions(options =>
             {
@@ -82,10 +104,15 @@ namespace PortalServer
 
             services.AddRazorPages();
             services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
-            
 
-            
         }
+
+
+
+
+
+
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -102,9 +129,9 @@ namespace PortalServer
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
+            app.UseCookiePolicy();
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -118,25 +145,6 @@ namespace PortalServer
 
             // Enable Authentication and Autorization
             app.UseAuthentication();
-            app.UseAuthorization();
-            /*
-            app.Use(async (context, next) =>
-            {
-                if (!context.User.Identity?.IsAuthenticated ?? false)
-                {
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Not Authenticated");
-                }
-                else
-                {
-                    await next();
-                }
-            });
-            */
-
-
-
-
 
 
             app.UseEndpoints(endpoints =>
