@@ -7,7 +7,7 @@
 
 
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin, User">
     <Authorized Context="user_context">
         <MudTable Items="orders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
             <ColGroup>

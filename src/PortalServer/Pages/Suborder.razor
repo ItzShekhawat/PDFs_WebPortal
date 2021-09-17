@@ -5,7 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject CustomIDataProtection CustomProtection
 
-<AuthorizeView>
+<AuthorizeView Roles="User, Admin">
     <Authorized Context="user_context">
         <MudTable Items="suborders" Hover="true" Bordered="true" Filter="new Func<GenericFF_Model, bool>(FilterFunc)">
             <ColGroup>

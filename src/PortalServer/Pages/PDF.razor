@@ -6,7 +6,7 @@
 @inject CustomIDataProtection CustomProtection
 
 
-<AuthorizeView>
+<AuthorizeView Roles="User, Admin">
     <Authorized Context="user_context">
         <MudTable Items="pdf_files" Hover="true" Bordered="true" Filter="new Func<PDF_FileModel, bool>(FilterFunc)">
             <ColGroup>

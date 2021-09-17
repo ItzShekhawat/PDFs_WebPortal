@@ -57,15 +57,12 @@
     <Authorized>
         Hello, @context.User.Identity.Name !
 
-        @if (context.User.IsInRole("Admin"))
-        {
-            Navigation.NavigateTo("/Admin/");
-        }
-        else if(context.User.IsInRole("User"))
+        @if (context.User.IsInRole("Admin") || context.User.IsInRole("User"))
         {
             Navigation.NavigateTo("/clients/");
-
+           
         }
+        
 
         
         foreach (var cla in context.User.Claims.ToList())
@@ -76,7 +73,9 @@
     </Authorized>
 
     <NotAuthorized>
-        <a href="authentication/login">Log in</a>
+        <h3>Utente non loggato, procede al LogIn </h3>
+        <br />
+        <a href="/signin-oidc">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
 

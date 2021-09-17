@@ -4,7 +4,7 @@
 @using System.Threading
 @inject NavigationManager navigationManager
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin" >
     <Authorized>
         @if (context.User.IsInRole("Admin"))
         {
@@ -20,15 +20,8 @@
                     <MudText>Update</MudText>
                 }
             </MudButton>
-            <MudButton OnClick="()=>navigationManager.NavigateTo(destinationStrings)">Go to Clients List</MudButton>
-
-        }
-        else
-        {
-            <MudButton OnClick="()=>navigationManager.NavigateTo(destinationStrings)">Go to Clients List</MudButton>
-        }
-
-
+            <MudButton OnClick="() => navigationManager.NavigateTo(destinationStrings)">Go to Clients List</MudButton>
+            }
     </Authorized>
     <NotAuthorized>
         <p>You are not authorized to enter </p>
