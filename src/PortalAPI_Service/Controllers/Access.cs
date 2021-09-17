@@ -20,14 +20,14 @@ namespace PortalAPI_Service.Controllers
 
         [HttpGet]
         [Route("all")]
-        public IActionResult GetUsers()
+        private IActionResult GetUsers()
         {
             var result = _loginRepo.AllUsers();
             return result == null ? NotFound() : Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckUser([FromBody]LoginForm user)
+        private async Task<IActionResult> CheckUser([FromBody]LoginForm user)
         {
             Console.WriteLine("Inizio");
             try

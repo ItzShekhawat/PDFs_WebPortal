@@ -24,7 +24,9 @@
                             }
                         </MudButton>
                     }
-                    <MudButton Class="btn-link btn" OnClick="Logout" StartIcon="@Icons.Material.Filled.Logout" Color="Color.Info" Style="color:white; font-size:15px; font-family:Marlett;" >Logout</MudButton>
+                <MudButton Class="btn-link btn" StartIcon="@Icons.Material.Filled.Logout" Color="Color.Info" Style="color:white; font-size:15px; font-family:Marlett;">
+                    <a class="nav-link" style="color:white" href="https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=https://localhost:44309/signout-oidc " asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
+                </MudButton>
                 </Authorized>
             </AuthorizeView>
         </MudContainer>
@@ -65,8 +67,7 @@
               OpenIdConnectDefaults.AuthenticationScheme);
 
         */
-        await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).LogoutUserFromAuthentication();
-        Navigation.NavigateTo("https://localhost:44309/");
+        Navigation.NavigateTo("/Areas/MicrosoftIdentity/Pages/Account/SignedOut.cshtml");
         StateHasChanged();
     }
 
