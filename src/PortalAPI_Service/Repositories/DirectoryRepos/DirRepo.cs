@@ -47,43 +47,51 @@ namespace PortalAPI_Service.Repositories.DirectoryRepos
             // The bool will tell the function if he has to search of files or dir 
             Console.WriteLine(root_path);
             List<string> ResultList = new();
+            try
+            {
             
 
-            SafeAccessTokenHandle safeAccessTokenHandle;
-            bool returnValue = LogonUser(username, domain, password,
-                LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT,
-                out safeAccessTokenHandle);
+                SafeAccessTokenHandle safeAccessTokenHandle;
+                bool returnValue = LogonUser(username, domain, password,
+                    LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT,
+                    out safeAccessTokenHandle);
 
-            // Check if the user Impersonated Exist 
-            if (false == returnValue)
-            {
-                int ret = Marshal.GetLastWin32Error();
-                Console.WriteLine("LogonUser failed with error code : {0}", ret);
-                throw new System.ComponentModel.Win32Exception(ret);
-            }
+                // Check if the user Impersonated Exist 
+                if (false == returnValue)
+                {
+                    int ret = Marshal.GetLastWin32Error();
+                    Console.WriteLine("LogonUser failed with error code : {0}", ret);
+                    throw new System.ComponentModel.Win32Exception(ret);
+                }
 
-            using (safeAccessTokenHandle)
-            {
-                //Console.WriteLine("Did LogonUser Succeed? " + (returnValue ? "Yes" : "No"));
-                //Console.WriteLine("Value of Windows NT token: " + safeAccessTokenHandle);
-                #pragma warning disable CA1416 // Validate platform compatibility
+                using (safeAccessTokenHandle)
+                {
+                    //Console.WriteLine("Did LogonUser Succeed? " + (returnValue ? "Yes" : "No"));
+                    //Console.WriteLine("Value of Windows NT token: " + safeAccessTokenHandle);
+                    #pragma warning disable CA1416 // Validate platform compatibility
 
-                // Check the identity.
-                //Console.WriteLine("Before impersonation: " + WindowsIdentity.GetCurrent().Name);
+                    // Check the identity.
+                    //Console.WriteLine("Before impersonation: " + WindowsIdentity.GetCurrent().Name);
 
-                // Use the token handle returned by LogonUser.
-                WindowsIdentity.RunImpersonated(safeAccessTokenHandle, () => {
-                    var impersonatedUser = WindowsIdentity.GetCurrent().Name;
+                    // Use the token handle returned by LogonUser.
+                    WindowsIdentity.RunImpersonated(safeAccessTokenHandle, () => {
+                        var impersonatedUser = WindowsIdentity.GetCurrent().Name;
 
-                    //IF true it get's me the list of dir else it get's me the files list  
-                    ResultList =  File_or_Folder ? Directory.GetDirectories(root_path).ToList() : Directory.GetFiles(root_path).ToList();
-                });
+                        //IF true it get's me the list of dir else it get's me the files list  
+                        ResultList =  File_or_Folder ? Directory.GetDirectories(root_path).ToList() : Directory.GetFiles(root_path).ToList();
+                    });
                 
-                // Check the identity.
-                //Console.WriteLine("After closing the context: " + WindowsIdentity.GetCurrent().Name);
-                #pragma warning disable CA1416 // Validate platform compatibility
-            }
+                    // Check the identity.
+                    //Console.WriteLine("After closing the context: " + WindowsIdentity.GetCurrent().Name);
+                    #pragma warning disable CA1416 // Validate platform compatibility
+                }
 
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Errore in lettura File/Folder : " + ex.Message) ;
+            }
             return ResultList;
 
 

@@ -1,26 +1,12 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using PortalAPI_Service.Repositories.AccessRepos;
 using PortalAPI_Service.Repositories.DirectoryRepos;
 using PortalAPI_Service.Repositories.FoldersRepos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Principal;
-using System.Text;
 
 
 namespace PortalAPI_Service

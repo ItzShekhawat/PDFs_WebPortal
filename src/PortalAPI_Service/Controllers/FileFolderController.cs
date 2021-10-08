@@ -13,12 +13,12 @@ namespace PortalAPI_Service.Controllers
     [ApiController]
     public class FileFolderController : ControllerBase
     {
-        private readonly IMemoryCache _memoryCache;
+        //private readonly IMemoryCache _memoryCache;
         private readonly IDirRepo _Drepo;
 
         public FileFolderController(IMemoryCache memoryCache, IDirRepo Drepo)
         {
-            _memoryCache = memoryCache;
+            //_memoryCache = memoryCache;
             _Drepo = Drepo;
         }
 

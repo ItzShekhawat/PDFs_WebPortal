@@ -11,7 +11,7 @@ using Microsoft.Net.Http.Headers;
 using MudBlazor.Services;
 using PortalAPI_Service.DbContextConnection;
 using PortalAPI_Service.Repositories.AccessRepos;
-using PortalServer.CacheRepo;
+
 using PortalServer.Data;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
@@ -58,7 +58,7 @@ namespace PortalServer
             services.AddScoped<ILoginRepo, LoginRepo>();
 
             // Linking the Default AutehticationStateProvider with  the custom one
-            services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
             
             // Css Framework
             services.AddMudServices();
@@ -72,7 +72,7 @@ namespace PortalServer
 
             // Caching
             services.AddMemoryCache();
-            services.AddSingleton<ICacheClass, CacheClass>();
+           
 
             // Data Protection
             services.AddSingleton<UniqueCode>();
@@ -106,13 +106,6 @@ namespace PortalServer
             services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 
         }
-
-
-
-
-
-
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
