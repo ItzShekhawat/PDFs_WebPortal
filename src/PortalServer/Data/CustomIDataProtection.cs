@@ -11,6 +11,10 @@ namespace PortalServer.Data
     public class CustomIDataProtection
     {
         private readonly IDataProtector protector;
+<<<<<<< HEAD
+=======
+        //static string key = "EPF_KEY";
+>>>>>>> main
 
         public CustomIDataProtection(IDataProtectionProvider dataProtectionProvider, UniqueCode uniqueCode)
         {

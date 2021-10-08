@@ -22,6 +22,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Rewrite;
+using System;
 
 namespace PortalServer
 {
@@ -82,7 +84,7 @@ namespace PortalServer
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             // Sign-in users with the Microsoft identity platform
-            services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(Configuration)
                     .EnableTokenAcquisitionToCallDownstreamApi(new string[] { "User.Read" })
                     .AddInMemoryTokenCaches();
 
@@ -105,8 +107,25 @@ namespace PortalServer
             services.AddRazorPages();
             services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 
+<<<<<<< HEAD
         }
 
+=======
+
+            //Cookie staff
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.LoginPath = "/";
+                options.SlidingExpiration = true;
+                options.LogoutPath = @"https://login.microsoftonline.com/common/oauth2/v2.0/logout";
+
+            });
+        }
+
+
+
+>>>>>>> main
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -138,6 +157,21 @@ namespace PortalServer
 
             // Enable Authentication and Autorization
             app.UseAuthentication();
+
+            //Sign Out
+            
+
+            app.Use(async (context, next) => {
+                //             ^^^^^^^ the HttpContext
+                if (context.Request.Path
+                        .Equals("/signout-oidc", System.StringComparison.OrdinalIgnoreCase))
+                {
+                       context.Response.Redirect("/");
+                    
+                }
+                await next();
+            });
+
 
 
             app.UseEndpoints(endpoints =>

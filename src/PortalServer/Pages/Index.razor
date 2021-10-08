@@ -8,6 +8,26 @@
 @inject Microsoft.Identity.Web.MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
 
 
+<AuthorizeView>
+    <Authorized>
+        Hello, @context.User.Identity.Name !
+
+        @if (context.User.IsInRole("Admin") || context.User.IsInRole("User"))
+        {
+            Navigation.NavigateTo("/clients/");
+           
+        }
+        <!--foreach (var cla in context.User.Claims.ToList()){} -->
+
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>Utente non loggato, procede al LogIn </h3>
+        <br />
+        <a href="/signin-oidc">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
 <!--
 
 <div id="parentContainer" Class="d-flex align-center justify-center py-2 px-1" style="height:100%; @($"Background:{Colors.Blue.Darken3};")" >
@@ -55,30 +75,8 @@
  -->
 
 
-<AuthorizeView>
-    <Authorized>
-        Hello, @context.User.Identity.Name !
-
-        @if (context.User.IsInRole("Admin") || context.User.IsInRole("User"))
-        {
-            Navigation.NavigateTo("/clients/");
-           
-        }
-        <!--foreach (var cla in context.User.Claims.ToList()){} -->
-
-    </Authorized>
-
-    <NotAuthorized>
-        <h3>Utente non loggato, procede al LogIn </h3>
-        <br />
-        <a href="/signin-oidc">Log in</a>
-    </NotAuthorized>
-</AuthorizeView>
-
-
-
 @code{
-
+ 
 
     /*
         LoginForm model = new();

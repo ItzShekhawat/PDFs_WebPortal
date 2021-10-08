@@ -164,7 +164,7 @@ namespace PortalAPI_Service.Controllers
             
             if (string.IsNullOrEmpty(File_path))
             {
-                return StatusCode(501, File_path);
+                return StatusCode(401);
             }
             else
             {
