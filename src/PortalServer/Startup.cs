@@ -107,10 +107,6 @@ namespace PortalServer
             services.AddRazorPages();
             services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 
-<<<<<<< HEAD
-        }
-
-=======
 
             //Cookie staff
             services.ConfigureApplicationCookie(options =>
@@ -123,9 +119,6 @@ namespace PortalServer
             });
         }
 
-
-
->>>>>>> main
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -162,7 +155,6 @@ namespace PortalServer
             
 
             app.Use(async (context, next) => {
-                //             ^^^^^^^ the HttpContext
                 if (context.Request.Path
                         .Equals("/signout-oidc", System.StringComparison.OrdinalIgnoreCase))
                 {
